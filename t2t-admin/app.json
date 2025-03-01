@@ -17,7 +17,8 @@
       "bundleIdentifier": "com.smartreflect.t2tadmin",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
