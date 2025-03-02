@@ -89,13 +89,38 @@ Ensure you have the following installed:
 ---
 
 ## **Project Structure**
+### Key Directories and Files:
 
-- `/src` - Contains the main React Native codebase
-- `/android` - Native Android configurations
-- `/ios` - Native iOS configurations
-- `.env` - Environment variables
-- `package.json` - Dependency manager file
-- `app.json` - Expo configuration file
+- **/src**: Main source code directory
+  - **/components**: Reusable UI components
+  - **/screens**: Screen components for navigation
+  - **/navigation**: Navigation configuration
+  - **/services**: API and external service integrations
+  - **/utils**: Helper functions and utilities
+  - **/context**: React Context providers
+  - **/styles**: Global styles and themes
+
+- **/assets**: Static files
+  - **/images**: Image assets
+  - **/fonts**: Custom font files
+
+- **/android**: Native Android configuration
+  - Build configurations
+  - Native modules
+  - Android-specific settings
+
+- **/ios**: Native iOS configuration
+  - Xcode project files
+  - CocoaPods dependencies
+  - iOS-specific settings
+
+- **Root Files**:
+  - **.env**: Environment variables
+  - **app.json**: Expo configuration
+  - **package.json**: Project dependencies
+  - **babel.config.js**: Babel settings
+  - **metro.config.js**: Metro bundler settings
+
 
 ---
 
