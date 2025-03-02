@@ -7,14 +7,16 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const checkAuth = async () => {
-            const token = await AsyncStorage.getItem('access_token');
-            setIsAuthenticated(!!token);
-        };
         checkAuth();
     }, []);
 
+    const checkAuth = async () => {
+        const token = await AsyncStorage.getItem('access_token');
+        setIsAuthenticated(!!token);
+    };
+
     const login = () => setIsAuthenticated(true);
+
     const logout = async () => {
         await AsyncStorage.removeItem('access_token');
         await AsyncStorage.removeItem('refresh_token');

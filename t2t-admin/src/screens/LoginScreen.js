@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { API_BASE_URL } from '@env';
+import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
+import { authService } from '../services/auth.service';
+
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -11,32 +12,36 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/login/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                await AsyncStorage.setItem('access_token', data.access);
-                await AsyncStorage.setItem('refresh_token', data.refresh);
-                login(); // Update auth state
-            } else {
-                Alert.alert('Login failed', data.detail || 'Invalid credentials');
-            }
+            const data = await authService.login(email, password);
+            await AsyncStorage.setItem('access_token', data.access);
+            await AsyncStorage.setItem('refresh_token', data.refresh);
+            login();
         } catch (error) {
-            console.error(error);
-            Alert.alert('Error', 'Something went wrong');
+            Alert.alert('Error', error.message);
         }
     };
 
     return (
         <View style={styles.container}>
             <Text>Login</Text>
-            <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
-            <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
+            <TextInput
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                style={styles.input}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoCorrect={false}
+            />
+            <TextInput
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                style={styles.input}
+                autoCapitalize="none"
+                autoCorrect={false}
+            />
             <Button title="Login" onPress={handleLogin} />
             <Button title="Register" onPress={() => navigation.navigate('Register')} />
         </View>
