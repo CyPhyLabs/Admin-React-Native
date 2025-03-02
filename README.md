@@ -1,145 +1,315 @@
-# Admin-React-Native
+# **Admin-React-Native**
 
-## Table of Contents
+## **Table of Contents**
+
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
+- [Project Structure](#project-structure)
 - [Running the App](#running-the-app)
 - [Building the App](#building-the-app)
-- [EAS](#eas)
-- [Cleanup](#cleanup)
+- [EAS (Expo Application Services)](#eas)
+- [Running on a Physical Device](#running-on-a-physical-device)
+- [Cleanup and Debugging](#cleanup-and-debugging)
+- [Common Issues and Fixes](#common-issues-and-fixes)
 
-## Introduction
-This repository contains the code for the Admin React Native application using Expo. Follow the steps below to set up and run the project.
+---
 
-## Prerequisites
-- Node.js (>= 14.x)
-- npm (>= 6.x) or yarn (>= 1.x)
-- Expo CLI (`npm install -g expo-cli`)
-- Android Studio (for Android builds)
-- Xcode (for iOS builds)
-- EAS CLI (`npm install -g eas-cli`)
+## **Introduction**
 
-## Setup
-1. Clone the repository:
+This repository contains the code for the **Admin React Native application** using **Expo**. This guide will walk you through **setting up**, **running**, **building**, and **cleaning up** the environment, covering both **Android and iOS** workflows.
+
+---
+
+## **Prerequisites**
+
+Ensure you have the following installed:
+
+- **Node.js** (>= 14.x, recommended: 18.x)
+- **npm** (>= 6.x) or **yarn** (>= 1.x)
+- **Expo CLI**
+  ```bash
+  npm install -g expo-cli
+  ```
+- **EAS CLI**
+  ```bash
+  npm install -g eas-cli
+  ```
+- **Android Setup:**
+  - **Android Studio**
+  - **Java Development Kit (JDK) 11 or later**
+  - **Android Emulator or a Physical Device with USB Debugging enabled**
+- **iOS Setup (Mac users only):**
+  - **Xcode** (Latest version recommended)
+  - **CocoaPods**
     ```bash
-    git clone https://github.com/your-repo/admin-react-native.git
-    cd admin-react-native/t2t-admin
+    sudo gem install cocoapods
     ```
+  - **iOS Simulator or a Physical iOS Device**
 
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
+---
 
-3. Create a `.env` file from the example:
-    ```bash
-    cp .env.example .env
-    ```
+## **Setup**
 
-4. Update the `.env` file with your API base URLs if necessary.
+1. **Clone the repository**
 
-## Running the App
-### Expo Go Mode
-To run the app in Expo Go mode:
+   ```bash
+   git clone https://github.com/your-repo/admin-react-native.git
+   cd admin-react-native/t2t-admin
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+   OR
+
+   ```bash
+   yarn install
+   ```
+
+3. **Create an environment file**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   - Update `.env` with your API keys, Firebase credentials, and other necessary configurations.
+
+4. **Verify the installation**
+
+   ```bash
+   npx expo doctor
+   ```
+
+   If any dependencies are missing, install them.
+
+---
+
+## **Project Structure**
+
+- `/src` - Contains the main React Native codebase
+- `/android` - Native Android configurations
+- `/ios` - Native iOS configurations
+- `.env` - Environment variables
+- `package.json` - Dependency manager file
+- `app.json` - Expo configuration file
+
+---
+
+## **Running the App**
+
+### **1. Run the app using Expo**
+
 ```bash
 npx expo start
 ```
-This will start the Expo development server. You can scan the QR code with the Expo Go app on your device.
 
-### Development Mode
-To run the app in development mode on a simulator or device:
+- Scan the **QR Code** using **Expo Go** on your mobile device.
+- Press `` to open on an Android emulator.
+- Press `` to open on an iOS simulator.
 
-#### Android
+### **2. Run on an Emulator/Simulator**
+
+#### **Android**
+
 ```bash
 npx expo start --android
 ```
 
-#### iOS
+- Ensure **Android Studio** is running with an **emulator** open.
+
+#### **iOS** (Mac only)
+
 ```bash
 npx expo start --ios
 ```
 
-#### Web
+- Ensure **Xcode** is installed and **iOS Simulator** is running.
+
+#### **Web**
+
 ```bash
 npx expo start --web
 ```
 
-## Building the App
-### Android
-1. Open Android Studio and load the `android` directory.
-2. Ensure you have the necessary SDKs installed.
-3. Run the following command to install dependencies:
-    ```bash
-    npx expo run:android
-    ```
+- Runs the app in a web browser.
 
-### iOS
-1. Open the `ios` directory in Xcode.
-2. Install CocoaPods dependencies:
-    ```bash
-    cd ios
-    pod install
-    cd ..
-    ```
-3. Run the following command to build the app:
-    ```bash
-    npx expo run:ios
-    ```
+---
 
-## EAS
-### Building with EAS
-To build the app using EAS, you need to have the EAS CLI installed and configured.
+## **Building the App**
 
-#### Development Build
+### **1. Android Build**
+
+1. Open Android Studio and ensure all SDKs are installed.
+2. Run:
+   ```bash
+   npx expo run:android
+   ```
+   OR
+   ```bash
+   eas build --platform android
+   ```
+
+### **2. iOS Build (Mac only)**
+
+1. Navigate to the iOS folder:
+   ```bash
+   cd ios
+   pod install
+   cd ..
+   ```
+2. Run:
+   ```bash
+   npx expo run:ios
+   ```
+   OR
+   ```bash
+   eas build --platform ios
+   ```
+
+---
+
+## **EAS (Expo Application Services)**
+
+### **1. Development Build**
+
 ```bash
 eas build --profile development --platform all
 ```
 
-#### Preview Build
+### **2. Preview Build**
+
 ```bash
 eas build --profile preview --platform all
 ```
 
-#### Production Build
+### **3. Production Build**
+
 ```bash
 eas build --profile production --platform all
 ```
 
-### Submitting to App Stores
-To submit your app to the app stores, use the following command:
+### **4. Submit to App Stores**
+
 ```bash
 eas submit --platform all
 ```
 
-## Cleanup
-To clean up the project, you can use the following commands:
+- Ensure **App Store** and **Google Play credentials** are set up.
 
-### Clear Expo Cache
+---
+
+## **Running on a Physical Device**
+
+### **Android (ADB Debugging)**
+
+1. Connect your Android device via USB.
+2. Enable **USB Debugging** in Developer options.
+3. Run:
+   ```bash
+   npx expo run:android --device
+   ```
+
+### **iOS (Physical Device)**
+
+1. Ensure your device is connected to the same Wi-Fi as your Mac.
+2. Use the following:
+   ```bash
+   npx expo run:ios --device
+   ```
+3. If you encounter issues, use **Xcode** to run the project directly.
+
+---
+
+## **Cleanup and Debugging**
+
+### **1. Clear Expo Cache**
+
 ```bash
 expo start -c
 ```
 
-### Clear npm Cache
+### **2. Remove and Reinstall Dependencies**
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+OR
+
+```bash
+yarn install
+```
+
+### **3. Reset npm Cache**
+
 ```bash
 npm cache clean --force
 ```
 
-### Remove node_modules and reinstall
-```bash
-rm -rf node_modules
-npm install
-```
+### **4. Remove and Reinstall Pods (iOS)**
 
-### Remove Pods and reinstall (iOS)
 ```bash
 cd ios
-rm -rf Pods
+rm -rf Pods Podfile.lock
 pod install
 cd ..
 ```
 
-## When to Use Different Build Commands
-- Use `npm start` for quick testing with Expo Go.
-- Use `npm run android` or `npm run ios` for development on simulators or devices.
-- Use EAS build commands for generating production-ready builds or internal testing builds.
+### **5. Force Rebuild**
+
+```bash
+expo r -c
+```
+
+---
+
+## **Common Issues and Fixes**
+
+### **Issue: “Command Not Found” for Expo**
+
+Fix:
+
+```bash
+npm install -g expo-cli
+```
+
+### **Issue: Metro Bundler stuck on “Starting project...”**
+
+Fix:
+
+```bash
+rm -rf .expo
+expo start -c
+```
+
+### **Issue: Emulator Not Found**
+
+- Ensure **Android Studio** is open and an emulator is running.
+
+### **Issue: iOS Build Fails**
+
+Fix:
+
+```bash
+cd ios
+pod install --verbose
+cd ..
+```
+
+### **Issue: Debugging with React Native Debugger**
+
+1. Install React Native Debugger:
+   ```bash
+   brew install --cask react-native-debugger
+   ```
+2. Open **Developer Menu** in Expo (Shake device or `Ctrl + m`) → Enable **Remote JS Debugging**.
+
+---
+
+This README provides **detailed setup, run, build, and debugging instructions** for React Native development using **Expo and EAS**.
+
