@@ -89,39 +89,95 @@ Ensure you have the following installed:
 ---
 
 ## **Project Structure**
-### Key Directories and Files:
+# T2T Admin React Native
 
-- **/src**: Main source code directory
-  - **/components**: Reusable UI components
-  - **/screens**: Screen components for navigation
-  - **/navigation**: Navigation configuration
-  - **/services**: API and external service integrations
-  - **/utils**: Helper functions and utilities
-  - **/context**: React Context providers
-  - **/styles**: Global styles and themes
+## Directory Structure
 
-- **/assets**: Static files
-  - **/images**: Image assets
-  - **/fonts**: Custom font files
+```plaintext
+t2t-admin/
+├── src/                        # Source files
+│   ├── components/            # Reusable components
+│   │   ├── common/           # Shared UI components
+│   │   │   ├── Button/
+│   │   │   ├── Input/
+│   │   │   └── Card/
+│   │   └── layout/           # Layout components
+│   │       ├── Header/
+│   │       └── Footer/
+│   ├── screens/              # Application screens
+│   │   ├── auth/            # Authentication screens
+│   │   │   ├── LoginScreen.js
+│   │   │   └── RegisterScreen.js
+│   │   └── main/            # Main app screens
+│   │       ├── HomeScreen.js
+│   │       └── ProfileScreen.js
+│   ├── navigation/           # Navigation setup
+│   │   ├── AppNavigator.js  # Main navigation
+│   │   ├── stacks/          # Stack navigators
+│   │   └── tabs/            # Tab navigators
+│   ├── services/            # API and services
+│   │   ├── api.js          # Base API setup
+│   │   ├── auth.service.js # Auth services
+│   │   └── user.service.js # User services
+│   ├── utils/               # Utilities
+│   │   ├── validation.js   # Form validation
+│   │   └── helpers.js      # Helper functions
+│   ├── context/            # React Context
+│   │   └── AuthContext.js  # Auth state management
+│   └── styles/             # Global styles
+│       ├── colors.js      # Color definitions
+│       └── typography.js  # Typography styles
+├── assets/                  # Static assets
+│   ├── images/            # Image files
+│   │   ├── logo.png
+│   │   └── icons/
+│   └── fonts/             # Custom fonts
+├── android/                # Android native files
+│   ├── app/
+│   │   └── build.gradle
+│   └── gradle/
+├── ios/                    # iOS native files
+│   ├── Podfile
+│   └── t2t-admin.xcworkspace/
+├── config/                 # Configuration files
+│   └── env.js            # Environment config
+└── root files
+    ├── .env              # Environment variables
+    ├── .env.example      # Example env file
+    ├── .gitignore       # Git ignore rules
+    ├── app.json         # Expo config
+    ├── babel.config.js  # Babel settings
+    ├── metro.config.js  # Metro bundler config
+    ├── package.json     # Dependencies
+    └── README.md        # Documentation
+```
 
-- **/android**: Native Android configuration
-  - Build configurations
-  - Native modules
-  - Android-specific settings
+## Quick Links
 
-- **/ios**: Native iOS configuration
-  - Xcode project files
-  - CocoaPods dependencies
-  - iOS-specific settings
+- [/src/components](./src/components) - Reusable UI components
+- [/src/screens](./src/screens) - Application screens
+- [/src/navigation](./src/navigation) - Navigation configuration
+- [/src/services](./src/services) - API and services
+- [/src/utils](./src/utils) - Helper functions
+- [/src/context](./src/context) - Context providers
+- [/src/styles](./src/styles) - Global styles
 
-- **Root Files**:
-  - **.env**: Environment variables
-  - **app.json**: Expo configuration
-  - **package.json**: Project dependencies
-  - **babel.config.js**: Babel settings
-  - **metro.config.js**: Metro bundler settings
+## Key Files
 
+- [app.json](./app.json) - Expo configuration
+- [package.json](./package.json) - Project dependencies
+- [.env.example](./.env.example) - Environment variables template
+- [metro.config.js](./metro.config.js) - Metro bundler configuration
 
+## Platform-Specific
+
+### Android
+- [android/app/build.gradle](./android/app/build.gradle) - Android build configuration
+- [android/settings.gradle](./android/settings.gradle) - Android settings
+
+### iOS
+- [ios/Podfile](./ios/Podfile) - iOS dependencies
+- [ios/t2t-admin.xcworkspace](./ios/t2t-admin.xcworkspace) - Xcode workspace
 ---
 
 ## **Running the App**
