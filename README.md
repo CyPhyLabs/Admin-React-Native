@@ -154,30 +154,30 @@ t2t-admin/
 
 ## Quick Links
 
-- [/src/components](./src/components) - Reusable UI components
-- [/src/screens](./src/screens) - Application screens
-- [/src/navigation](./src/navigation) - Navigation configuration
-- [/src/services](./src/services) - API and services
-- [/src/utils](./src/utils) - Helper functions
-- [/src/context](./src/context) - Context providers
-- [/src/styles](./src/styles) - Global styles
+- [/src/components](.t2t-admin/src/components) - Reusable UI components
+- [/src/screens](.t2t-admin/src/screens) - Application screens
+- [/src/navigation](.t2t-admin/src/navigation) - Navigation configuration
+- [/src/services](.t2t-admin/src/services) - API and services
+- [/src/utils](.t2t-admin/src/utils) - Helper functions
+- [/src/context](.t2t-admin/src/context) - Context providers
+- [/src/styles](.t2t-admin/src/styles) - Global styles
 
 ## Key Files
 
-- [app.json](./app.json) - Expo configuration
-- [package.json](./package.json) - Project dependencies
-- [.env.example](./.env.example) - Environment variables template
-- [metro.config.js](./metro.config.js) - Metro bundler configuration
+- [app.json](.t2t-admin/app.json) - Expo configuration
+- [package.json](.t2t-admin/package.json) - Project dependencies
+- [.env.example](.t2t-admin/.env.example) - Environment variables template
+- [metro.config.js](.t2t-admin/metro.config.js) - Metro bundler configuration
 
 ## Platform-Specific
 
 ### Android
-- [android/app/build.gradle](./android/app/build.gradle) - Android build configuration
-- [android/settings.gradle](./android/settings.gradle) - Android settings
+- [android/app/build.gradle](.t2t-admin/android/app/build.gradle) - Android build configuration
+- [android/settings.gradle](.t2t-admin/android/settings.gradle) - Android settings
 
 ### iOS
-- [ios/Podfile](./ios/Podfile) - iOS dependencies
-- [ios/t2t-admin.xcworkspace](./ios/t2t-admin.xcworkspace) - Xcode workspace
+- [ios/Podfile](.t2t-admin/ios/Podfile) - iOS dependencies
+- [ios/t2t-admin.xcworkspace](.t2t-admin/ios/t2t-admin.xcworkspace) - Xcode workspace
 ---
 
 ## **Running the App**
