@@ -16,7 +16,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.smartreflect.t2tadmin",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "This app uses the camera to scan QR codes."
       }
     },
     "android": {
@@ -34,6 +35,14 @@
         "projectId": "cc972d45-84d7-4a76-a555-b6908682d6f7"
       }
     },
-    "owner": "smart-reflect"
+    "owner": "smart-reflect",
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access the camera for QR scanning."
+        }
+      ]
+    ]
   }
 }
