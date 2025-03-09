@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Calendar" component={CalendarScreen} />
     </Tab.Navigator>
@@ -23,7 +23,7 @@ const AppNavigator = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
                  {isAuthenticated ? ( 
                     <Stack.Screen name="Home" component={TabNavigator} />
                  ) : ( 
