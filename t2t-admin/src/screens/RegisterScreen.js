@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet, Text } from 'react-native';
 import { authService } from '../services/auth.service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegisterScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -22,6 +23,7 @@ const RegisterScreen = ({ navigation }) => {
             }
 
             await authService.register(username, email, password, userType);
+            await AsyncStorage.setItem('username', username);
             Alert.alert('Success', 'Account created. Please log in.');
             navigation.navigate('Login');
         } catch (error) {
