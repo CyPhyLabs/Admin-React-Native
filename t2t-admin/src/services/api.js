@@ -96,4 +96,17 @@ export const BASE_URL = getBaseUrl();
 export const ENDPOINTS = {
     LOGIN: '/login/',
     REGISTER: '/register/',
+    MESSAGES: '/messages/',
+};
+
+// Function to fetch messages
+export const fetchMessages = async () => {
+    try {
+        const messages = await apiCall(ENDPOINTS.MESSAGES);
+        console.log('Fetched messages:', messages);
+        return messages;
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        throw error;
+    }
 };

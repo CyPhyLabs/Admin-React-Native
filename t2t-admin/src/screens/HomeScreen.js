@@ -20,6 +20,7 @@ import React, {
   import { useNavigation } from '@react-navigation/native';
   import HomeStyles from '../styles/HomeStyles';
   import { Button } from 'react-native';
+  import { fetchMessages } from '../services/api';
   
   const HomeScreen = () => {
     // #region Authentication and User Data
@@ -39,6 +40,8 @@ import React, {
       useState(false);
     const [isPriorityDropdownVisible, setIsPriorityDropdownVisible] =
       useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     // #endregion
   
     // #region Navigation Hook
@@ -56,7 +59,35 @@ import React, {
   
       fetchUsername();
     }, [getItem]);
+
+    useEffect(() => {
+      fetchNotifications();
+    }, [fetchNotifications]);
     // #endregion
+
+    const fetchNotifications = useCallback(async () => {
+      setIsLoading(true);
+      try {
+        // fetchMessages already returns parsed JSON data
+        const data = await fetchMessages();
+        
+        // Transform the data to match your notification structure
+        const formattedNotifications = data.map(item => ({
+          title: item.message.title,
+          body: item.message.body,
+          priority: item.message.priority,
+          // Assuming all fetched messages are unread
+          read: false,
+          id: item.message.message_id
+        }));
+        
+        setNotifications(formattedNotifications);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }finally {
+        setIsLoading(false);
+      }
+    }, []);
   
     // #region Modal Toggles
     const toggleSettingsModal = useCallback(() => {
@@ -119,58 +150,62 @@ import React, {
       ),
       [username, toggleSettingsModal],
     );
-  
-    const NotificationsSection = useMemo(
-      () => (
-        <View style={HomeStyles.sectionContainer}>
-          <View style={HomeStyles.sectionTextContainer}>
-            <Text style={HomeStyles.sectionText}>Notifications</Text>
-            <Icon
-              name="notifications-outline"
-              size={20}
-              color="#272635"
-              style={HomeStyles.sectionIcon}
-            />
-          </View>
-  
-          <View style={HomeStyles.ovalContainer}>
-            <TouchableOpacity
-              style={[
-                HomeStyles.tab,
-                activeNotificationTab === 'unread' && HomeStyles.activeTab,
-              ]}
-              onPress={() => setActiveNotificationTab('unread')}
-            >
-              <Text
-                style={[
-                  HomeStyles.tabText,
-                  activeNotificationTab === 'unread' && HomeStyles.activeTabText,
-                ]}
-              >
-                Unread
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                HomeStyles.tab,
-                activeNotificationTab === 'read' && HomeStyles.activeTab,
-              ]}
-              onPress={() => setActiveNotificationTab('read')}
-            >
-              <Text
-                style={[
-                  HomeStyles.tabText,
-                  activeNotificationTab === 'read' && HomeStyles.activeTabText,
-                ]}
-              >
-                Read
-              </Text>
-            </TouchableOpacity>
-          </View>
+
+    const NotificationsSection = useMemo(() => (
+      <View style={HomeStyles.sectionContainer}>
+        <View style={HomeStyles.sectionTextContainer}>
+          <Text style={HomeStyles.sectionText}>Notifications</Text>
+          <Icon name="notifications-outline" size={20} color="#272635" style={HomeStyles.sectionIcon} />
         </View>
-      ),
-      [activeNotificationTab],
-    );
+
+        
+    
+        <View style={HomeStyles.ovalContainer}>
+          <TouchableOpacity
+            style={[HomeStyles.tab, activeNotificationTab === 'unread' && HomeStyles.activeTab]}
+            onPress={() => setActiveNotificationTab('unread')}
+          >
+            <Text style={[HomeStyles.tabText, activeNotificationTab === 'unread' && HomeStyles.activeTabText]}>
+              Unread
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[HomeStyles.tab, activeNotificationTab === 'read' && HomeStyles.activeTab]}
+            onPress={() => setActiveNotificationTab('read')}
+          >
+            <Text style={[HomeStyles.tabText, activeNotificationTab === 'read' && HomeStyles.activeTabText]}>
+              Read
+            </Text>
+          </TouchableOpacity>
+        </View>
+    
+        {notifications.length > 0 ? (
+          notifications
+            .filter(notification => (activeNotificationTab === 'unread' ? !notification.read : notification.read))
+            .slice(0, 3) // Show only the latest 3 notifications
+            .map((notification, index) => (
+              <View key={index} style={HomeStyles.notificationItem}>
+                <View style={HomeStyles.notificationContent}>
+                  <Text style={HomeStyles.notificationTitle}>{notification.title}</Text>
+                  <Text style={HomeStyles.notificationBody}>{notification.body}</Text>
+                </View>
+              </View>
+            ))
+        ) : (
+          <Text style={HomeStyles.noNotificationsText}>
+    {isLoading ? "Loading notifications" : "No notifications"}
+  </Text>
+
+        )}
+         <TouchableOpacity 
+      style={HomeStyles.viewAllButton}
+      onPress={() => navigation.navigate('Notifications', { initialTab: activeNotificationTab })}
+    >
+      <Text style={HomeStyles.viewAllText}>View All</Text>
+      <Icon name="chevron-forward" size={16} color="#007AFF" />
+    </TouchableOpacity>
+      </View>
+    ), [activeNotificationTab, notifications, isLoading]);
   
     const UpcomingEventsSection = useMemo(
       () => (
@@ -189,22 +224,7 @@ import React, {
       [],
     );
   
-    const PersonalRemindersSection = useMemo(
-      () => (
-        <View style={HomeStyles.sectionContainer}>
-          <View style={HomeStyles.sectionTextContainer}>
-            <Text style={HomeStyles.sectionText}>Personal Reminders</Text>
-            <Icon
-              name="time-outline"
-              size={20}
-              color="#272635"
-              style={HomeStyles.sectionIcon}
-            />
-          </View>
-        </View>
-      ),
-      [],
-    );
+    
   
     const SettingsModal = useMemo(
       () => (
@@ -382,7 +402,6 @@ import React, {
         {HeaderSection}
         {NotificationsSection}
         {UpcomingEventsSection}
-        {PersonalRemindersSection}
   
         <TouchableOpacity
           style={HomeStyles.addButton}
