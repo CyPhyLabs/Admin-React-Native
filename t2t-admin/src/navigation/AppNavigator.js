@@ -7,16 +7,36 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import { AuthContext } from '../context/AuthContext';
+import NotificationsScreen from '../screens/NotificationsScreen';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+
 const TabNavigator = () => (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Calendar" component={CalendarScreen} />
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="notifications-outline" color={color} size={size} />),
+        }}
+      />
+       <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="home-outline" color={color} size={size} />),
+        }}
+      />
+      <Tab.Screen
+        name="Events"
+        component={CalendarScreen}
+        options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="calendar-outline" color={color} size={size} /> ),
+        }}
+      />
+     
     </Tab.Navigator>
-);
+  );
 
 const AppNavigator = () => {
     const { isAuthenticated } = useContext(AuthContext);

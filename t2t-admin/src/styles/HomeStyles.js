@@ -54,6 +54,7 @@ export const HomeStyles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 5,
     width: '100%',
+    marginBottom: 15, 
   },
   tab: {
     flex: 1,
@@ -185,6 +186,50 @@ export const HomeStyles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  notificationItem: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  
+  notificationContent: {
+    flex: 1,
+  },
+  
+  notificationTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#272635',
+    marginBottom: 2,
+  },
+  
+  notificationBody: {
+    fontSize: 12,
+    color: '#555',
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',  // This aligns the button to the right
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 12,
+    paddingVertical: 5,
+  },
+  
+  viewAllText: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '500',
+    marginRight: 4,
   },
 });
 
