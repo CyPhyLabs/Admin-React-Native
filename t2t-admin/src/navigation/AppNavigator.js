@@ -12,9 +12,12 @@ import NotificationsScreen from '../screens/NotificationsScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { AuthContext } from '../context/AuthContext';
+import NotificationsScreen from '../screens/NotificationsScreen';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
 
 const TabNavigator = () => (
   <Tab.Navigator>
@@ -50,10 +53,31 @@ const TabNavigator = () => (
     />
   </Tab.Navigator>
 );
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="notifications-outline" color={color} size={size} />),
+        }}
+      />
+       <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="home-outline" color={color} size={size} />),
+        }}
+      />
+      <Tab.Screen
+        name="Events"
+        component={CalendarScreen}
+        options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="calendar-outline" color={color} size={size} /> ),
+        }}
+      />
+     
+    </Tab.Navigator>
+  );
 
 const AppNavigator = () => {
   const { isAuthenticated } = useContext(AuthContext);
-
   return (
     <SafeAreaProvider>
       <NavigationContainer>
@@ -71,6 +95,20 @@ const AppNavigator = () => {
       </NavigationContainer>
     </SafeAreaProvider>
   );
+    return (
+        <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                 {isAuthenticated ? ( 
+                    <Stack.Screen name="Home" component={TabNavigator} />
+                 ) : ( 
+                     <> 
+                        { <Stack.Screen name="Login" component={LoginScreen} /> }
+                        { <Stack.Screen name="Register" component={RegisterScreen} /> }
+                     </> 
+                 )} 
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
 };
 
 export default AppNavigator;
