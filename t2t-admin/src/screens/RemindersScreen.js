@@ -17,7 +17,7 @@ const RemindersScreen = () => {
 
   useEffect(() => {
     loadReminders();
-  }, [])
+  }, []);
 
   const loadReminders = async () => {
     try {

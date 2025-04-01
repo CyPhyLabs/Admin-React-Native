@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import Calendar from '../components/Calendar/Calendar';
 import styles from '../styles/CalendarScreenStyles';
-import modalStyles from '../styles/ModalStyles';
+import modalStyles from '../styles/ModalStyles'; // Import modalStyles
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const CalendarScreen = ({ navigation }) => {
+  // Initial state of selectedDate to today's date
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [modalVisible, setModalVisible] = useState(false);
   const formattedDate = selectedDate ? moment(selectedDate).format('MMMM D, YYYY') : '';

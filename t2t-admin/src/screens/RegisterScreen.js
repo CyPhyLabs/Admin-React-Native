@@ -7,7 +7,7 @@ const RegisterScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [userType, setUserType] = useState('staff'); 
+    const [userType, setUserType] = useState('staff'); // Default
 
     const handleRegister = async () => {
         try {
