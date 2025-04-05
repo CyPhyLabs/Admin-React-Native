@@ -8,17 +8,20 @@ const getBaseUrl = () => {
 
 export const BASE_URL = getBaseUrl();
 
-export const apiCall = async (endpoint, method = 'GET', body = null) => {
+export const apiCall = async (endpoint, method = 'GET', body = null, customHeaders = {}) => {
     const url = `${BASE_URL}${endpoint}`;
+
     const options = {
         method,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            ...customHeaders, // Merge custom headers
         },
+        
         ...(body && { body: JSON.stringify(body) }),
     };
-
+    
     console.log(`Making ${method} request to:`, url, 'with options:', options);
 
     try {
@@ -59,11 +62,11 @@ export const apiCall = async (endpoint, method = 'GET', body = null) => {
 };
 
 
-
 export const ENDPOINTS = {
     LOGIN: '/login/',
     REGISTER: '/register/',
     MESSAGES: '/messages/',
+    SEND_MESSAGE: '/messages/create/',
 };
 
 // Function to fetch messages
