@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import HomeStyles from '../styles/HomeStyles';
 import { Button } from 'react-native';
-import { fetchMessages } from '../services/api';
+import { fetchMessages } from '../services/sendMessage';
 import { Switch } from 'react-native';
 import { Platform } from 'react-native';
 import { sendMessage } from '../services/sendMessage';
@@ -35,7 +35,7 @@ const HomeScreen = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [message, setMessage] = useState('');
   const [activeNotificationTab, setActiveNotificationTab] = useState('unread');
-  const [recipient, setRecipient] = useState('all');
+  const [recipient, setRecipient] = useState('everyone');
   const [isRecipientDropdownVisible, setIsRecipientDropdownVisible] =
     useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -310,9 +310,9 @@ const HomeScreen = () => {
                 <View style={HomeStyles.dropdownContent}>
                   <TouchableOpacity
                     style={HomeStyles.dropdownOption}
-                    onPress={() => selectRecipient('all')}
+                    onPress={() => selectRecipient('everyone')}
                   >
-                    <Text>All</Text>
+                    <Text>everyone</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={HomeStyles.dropdownOption}

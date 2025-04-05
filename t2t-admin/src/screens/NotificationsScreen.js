@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
-import { fetchMessages } from '../services/api';
+import { fetchMessages } from '../services/sendMessage';
 import HomeStyles from '../styles/HomeStyles';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NotificationStyles from '../styles/NotificationStyles';
@@ -50,7 +50,7 @@ const NotificationsScreen = () => {
             onPress={() => openModal(item)} 
             style={[
                 HomeStyles.notificationItem, 
-                item.priority === 'low' && { backgroundColor: 'rgb(254, 233, 225)' }
+                item.priority === 'high' && { backgroundColor: 'rgb(254, 233, 225)' }
             ]}
         >
             <View style={HomeStyles.notificationContent}>
