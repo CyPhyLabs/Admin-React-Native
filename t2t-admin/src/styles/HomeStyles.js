@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 export const HomeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E0E2F0',
+    backgroundColor: '#D7E3F1',
   },
   header: {
     flexDirection: 'row',
@@ -23,7 +23,7 @@ export const HomeStyles = StyleSheet.create({
   username: {
     fontSize: 28,
     fontStyle: 'italic',
-    color: '#4F5892',
+    color: '#637D92',
   },
   settingsButton: {
     padding: 5,
@@ -40,7 +40,7 @@ export const HomeStyles = StyleSheet.create({
   },
   sectionText: {
     fontSize: 20,
-    color: '#272635',
+    color: '#29384B',
     fontWeight: '500',
     marginRight: 5,
   },
@@ -49,7 +49,7 @@ export const HomeStyles = StyleSheet.create({
   },
   ovalContainer: {
     flexDirection: 'row',
-    backgroundColor: '#D0D2E0',
+    backgroundColor: '#637D92',
     borderRadius: 25,
     paddingVertical: 4,
     paddingHorizontal: 5,
@@ -66,12 +66,12 @@ export const HomeStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   tabText: {
-    color: '#4F5892',
+    color: '#FFFFFF',
     fontWeight: '500',
     fontSize: 12,
   },
   activeTabText: {
-    color: '#4F5892',
+    color: '#637D92',
     fontWeight: 'bold',
     fontSize: 12,
   },
@@ -83,7 +83,7 @@ export const HomeStyles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
     width: '80%',
     alignItems: 'center',
@@ -92,30 +92,19 @@ export const HomeStyles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333',
-  },
-  closeButton: {
-    backgroundColor: '#4F5892',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#29384B',
   },
   addButton: {
     position: 'absolute',
     right: 20,
     bottom: 20,
-    backgroundColor: '#4F5892',
+    backgroundColor: '#637D92',
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -180,7 +169,7 @@ export const HomeStyles = StyleSheet.create({
     marginLeft: 5,
   },
   sendButton: {
-    backgroundColor: '#32CD32', // LimeGreen
+    backgroundColor :'#885053',
   },
   sendButtonText: {
     color: '#fff',
@@ -223,13 +212,29 @@ export const HomeStyles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginTop: 12,
     paddingVertical: 5,
+    color: '#637D92',
   },
-  
   viewAllText: {
-    color: '#007AFF',
+    color: '#29384B',
     fontSize: 14,
     fontWeight: '500',
     marginRight: 4,
+  },
+  priorityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  priorityLabel: {
+    marginRight: 10,
+    fontSize: 16,
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 5,
+    zIndex: 1, // Ensure it's above other content
   },
 });
 

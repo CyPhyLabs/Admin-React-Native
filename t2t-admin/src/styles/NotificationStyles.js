@@ -2,50 +2,52 @@
 import { StyleSheet } from 'react-native';
 
 const NotificationStyles = StyleSheet.create({
-    container: {
+  safeArea: {
       flex: 1,
-      padding: 20,
-      backgroundColor: '#E0E2F0',
-    },
-    headerContainer: {
+      backgroundColor: '#D7E3F1', // set the background color for the safe area
+  },
+  container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: '#D7E3F1', // make sure container background color matches the safeArea color
+  },
+  headerContainer: {
       flexDirection: 'row',
+      justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 20,
-    },
-    header: {
+  },
+  header: {
       fontSize: 24,
       fontWeight: 'bold',
-      color: '#4F5892',
-      marginRight: 10,
-    },
-    loadingContainer: {
+      color: '#637D92',
+  },
+  loadingContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    loadingText: {
+  },
+  loadingText: {
       marginTop: 10,
-      fontSize: 18,
-      fontWeight: '500',
+      fontSize: 16,
       color: '#4F5892',
-    },
-    emptyText: {
+  },
+  emptyText: {
+      fontSize: 16,
+      color: '#4F5892',
       textAlign: 'center',
-      fontSize: 16,
-      color: '#272635',
       marginTop: 20,
-    },
-    modalBody: {
+  },
+  modalBody: {
       fontSize: 16,
-      color: '#333',
-      marginBottom: 15,
-    },
-    modalPriority: {
+      marginBottom: 12,
+  },
+  modalPriority: {
       fontSize: 14,
-      color: '#666',
-      marginBottom: 20,
-    },
-  });
+      color: 'gray',
+      marginBottom: 16,
+  },
 
+});
 
 export default NotificationStyles;
