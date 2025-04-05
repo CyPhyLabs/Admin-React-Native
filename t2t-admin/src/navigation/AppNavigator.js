@@ -21,31 +21,31 @@ const TabNavigator = () => (
     <Tab.Screen
       name="Notifications"
       component={NotificationsScreen}
-      options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="notifications-outline" color={color} size={size} />),
+      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="notifications-outline" color={color} size={size} />),
       }}
     />
      <Tab.Screen
       name="Home"
       component={HomeScreen}
-      options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="home-outline" color={color} size={size} />),
+      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="home-outline" color={color} size={size} />),
       }}
     />
     <Tab.Screen
       name="Events"
       component={CalendarScreen}
-      options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="calendar-outline" color={color} size={size} /> ),
+      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="calendar-outline" color={color} size={size} /> ),
       }}
     />
     <Tab.Screen
       name="Reminders"
       component={RemindersScreen}
-      options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="alarm-outline" color={color} size={size} /> ),
+      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="alarm-outline" color={color} size={size} /> ),
       }}
     />
     <Tab.Screen
       name="Settings"
       component={SettingsScreen}
-      options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="settings-outline" color={color} size={size} /> ),
+      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="settings-outline" color={color} size={size} /> ),
       }}
     />
   </Tab.Navigator>

@@ -22,7 +22,7 @@ import { Button } from 'react-native';
 import { fetchMessages } from '../services/api';
 import { Switch } from 'react-native';
 import { Platform } from 'react-native';
-
+import { sendMessage } from '../services/sendMessage';
 const HomeScreen = () => {
   // #region Authentication and User Data
   const { logout } = useContext(AuthContext);
@@ -122,16 +122,24 @@ const HomeScreen = () => {
   //}, []);
   // #endregion
 
-  // #region Message Handling
-  const sendMessage = useCallback(() => {
-    console.log('Message:', message);
-    console.log('Recipient:', recipient);
-    console.log('Priority:', isPriority); // Use the isPriority state
-
-    toggleAddModal();
-    setMessage('');
-  }, [message, recipient, isPriority, toggleAddModal]); // Make sure to include isPriority in the dependency array
-  // #endregion
+  const handleSendMessage = useCallback(async () => {
+    try {
+      const response = await sendMessage({
+        title: 'New Message',
+        target_audience: recipient,
+        body: message,
+        priority: isPriority,
+      });
+      console.log('API Response:', response);
+    
+      // Avoid setting state in a way that triggers re-renders unnecessarily
+      setMessage(''); 
+      setRecipient('');
+      setIsPriority(false);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }, [message, recipient, isPriority]);
 
   // #region Rendered Components
   const HeaderSection = useMemo(
@@ -336,7 +344,7 @@ const HomeScreen = () => {
             <View style={HomeStyles.buttonContainer}>
 
               <TouchableOpacity
-                onPress={sendMessage}
+                onPress={handleSendMessage}
                 style={[HomeStyles.button, HomeStyles.sendButton]}
               >
                 <Text style={HomeStyles.sendButtonText}>Send</Text>
@@ -356,7 +364,7 @@ const HomeScreen = () => {
       isRecipientDropdownVisible,
       toggleRecipientDropdown,
       selectRecipient,
-      sendMessage,
+      handleSendMessage,
     ],
   );
   // #endregion

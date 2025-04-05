@@ -13,8 +13,10 @@ const LoginScreen = ({ navigation }) => {
     const handleLogin = async () => {
         try {
             const data = await authService.login(email, password);
+            
             await AsyncStorage.setItem('access_token', data.access);
             await AsyncStorage.setItem('refresh_token', data.refresh);
+            
             login();
         } catch (error) {
             Alert.alert('Error', error.message);
