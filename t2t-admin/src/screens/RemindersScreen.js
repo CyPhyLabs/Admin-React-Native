@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, Platform, Animated } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { View, Text, FlatList, Alert, TouchableOpacity, Platform, Animated, SafeAreaView } from 'react-native';
 import { TextInput, Button, Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { RemindersStyles as styles } from '../styles/RemindersStyles'; 
 
 const RemindersScreen = () => {
   const [reminders, setReminders] = useState([]);
@@ -15,6 +16,34 @@ const RemindersScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0.2)); 
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedReminders, setSelectedReminders] = useState([]);
+
+  // Get count of active (uncompleted) reminders
+  const activeRemindersCount = reminders.filter(reminder => !reminder.completed).length;
+  const completedRemindersCount = reminders.length - activeRemindersCount;
+
+  const getReminderCountText = () => {
+    if (reminders.length === 0) {
+      return ""; 
+    } else if (reminders.length === 1) {
+      return "1 Reminder";
+    } else {
+      return `${reminders.length} Reminders`;
+    }
+  };
+
+  const getSubtitleText = () => {
+    if (reminders.length === 0) {
+      return "Add your first reminder below";
+    } else if (completedRemindersCount === 0) {
+      return "All tasks pending";
+    } else if (completedRemindersCount === reminders.length) {
+      return "All tasks completed";
+    } else {
+      return `${completedRemindersCount} of ${reminders.length} completed`;
+    }
+  };
 
   useEffect(() => {
     loadReminders();
@@ -40,7 +69,11 @@ const RemindersScreen = () => {
   };
 
   const addReminder = () => {
-    const newReminder = { title: newReminderTitle, time: newReminderTime.toLocaleString(), completed: false };
+    const newReminder = { 
+      title: newReminderTitle, 
+      time: newReminderTime.toISOString(), 
+      completed: false 
+    };
     const updatedReminders = [...reminders, newReminder];
     setReminders(updatedReminders);
     saveReminders(updatedReminders);
@@ -52,7 +85,11 @@ const RemindersScreen = () => {
   const editReminder = () => {
     const updatedReminders = reminders.map((reminder, index) => {
       if (index === currentReminder) {
-        return { ...reminder, title: newReminderTitle, time: newReminderTime.toLocaleString() };
+        return { 
+          ...reminder, 
+          title: newReminderTitle, 
+          time: newReminderTime.toISOString() 
+        };
       }
       return reminder;
     });
@@ -99,7 +136,21 @@ const RemindersScreen = () => {
   const openEditDialog = (index) => {
     setCurrentReminder(index);
     setNewReminderTitle(reminders[index].title);
-    setNewReminderTime(new Date(reminders[index].time));
+    
+    try {
+      const reminderTime = new Date(reminders[index].time);
+      
+      if (isNaN(reminderTime.getTime())) {
+        console.log("Invalid date detected, using current date as fallback");
+        setNewReminderTime(new Date());
+      } else {
+        setNewReminderTime(reminderTime);
+      }
+    } catch (error) {
+      console.log("Error parsing date:", error);
+      setNewReminderTime(new Date());
+    }
+    
     setEditMode(true);
     setDialogVisible(true);
   };
@@ -122,27 +173,42 @@ const RemindersScreen = () => {
     }
   };
 
-  const handleDateChange = (event, selectedDate) => {
+  const handleDateChange = useCallback((event, selectedDate) => {
+    // Prevent unnecessary state updates if user cancels
     if (selectedDate) {
-      setNewReminderTime((prevTime) => {
-        const newTime = new Date(prevTime);
-        newTime.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-        return newTime;
-      });
+      const currentTime = newReminderTime;
+      selectedDate.setHours(currentTime.getHours(), currentTime.getMinutes());
+      
+      setNewReminderTime(selectedDate);
     }
-    setShowDatePicker(false);
-  };
+    
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true
+    }).start(() => {
+      setShowDatePicker(false);
+      fadeAnim.setValue(0.2);
+    });
+  }, [newReminderTime, fadeAnim]);
 
-  const handleTimeChange = (event, selectedTime) => {
+  const handleTimeChange = useCallback((event, selectedTime) => {
     if (selectedTime) {
-      setNewReminderTime((prevTime) => {
-        const newTime = new Date(prevTime);
-        newTime.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-        return newTime;
-      });
+      const currentDate = newReminderTime;
+      selectedTime.setFullYear(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+      
+      setNewReminderTime(selectedTime);
     }
-    setShowTimePicker(false);
-  };
+    
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true
+    }).start(() => {
+      setShowTimePicker(false);
+      fadeAnim.setValue(0.2);
+    });
+  }, [newReminderTime, fadeAnim]);
 
   const renderCheckbox = (item, index) => {
     return (
@@ -192,177 +258,362 @@ const RemindersScreen = () => {
     }
   }, [showDatePicker, showTimePicker]);
 
+  const toggleSelectionMode = () => {
+    setSelectionMode(!selectionMode);
+    setSelectedReminders([]);
+  };
+
+  const toggleReminderSelection = (index) => {
+    setSelectedReminders(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(i => i !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+  };
+
+  const deleteSelectedReminders = () => {
+    if (selectedReminders.length === 0) return;
+    
+    Alert.alert(
+      'Delete Reminders',
+      `Are you sure you want to delete ${selectedReminders.length} reminder${selectedReminders.length > 1 ? 's' : ''}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            const updatedReminders = reminders.filter((_, index) => !selectedReminders.includes(index));
+            setReminders(updatedReminders);
+            saveReminders(updatedReminders);
+            setSelectionMode(false);
+            setSelectedReminders([]);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const deleteCompletedReminders = () => {
+    if (completedRemindersCount === 0) return;
+    
+    Alert.alert(
+      'Delete Completed Reminders',
+      `Are you sure you want to delete all ${completedRemindersCount} completed reminder${completedRemindersCount > 1 ? 's' : ''}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            const updatedReminders = reminders.filter(reminder => !reminder.completed);
+            setReminders(updatedReminders);
+            saveReminders(updatedReminders);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const formatReminderTime = (timeString) => {
+    try {
+      const date = new Date(timeString);
+      if (isNaN(date.getTime())) {
+        return timeString; 
+      }
+      
+      return date.toLocaleString('en-US', {
+        weekday: 'short',
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return timeString;
+    }
+  };
+
+  const ReminderDialog = useMemo(() => (
+    <Dialog 
+      visible={dialogVisible} 
+      onDismiss={() => setDialogVisible(false)}
+      style={{ backgroundColor: '#FFFFFF', borderRadius: 10 }}
+    >
+      <TouchableOpacity
+        style={styles.closeIcon}
+        onPress={() => setDialogVisible(false)}
+      >
+        <Icon name="close" size={22} color="#637D92" />
+      </TouchableOpacity>
+      
+      <Dialog.Title style={styles.modalTitle}>
+        {editMode ? 'Edit Reminder' : 'Add Reminder'}
+      </Dialog.Title>
+      
+      <Dialog.Content>
+        <TextInput
+          placeholder="Enter reminder title"
+          value={newReminderTitle}
+          onChangeText={(text) => setNewReminderTitle(text)}
+          style={styles.input}
+        />
+        
+        <TouchableOpacity 
+          style={styles.dateTimePicker}
+          onPress={showDatePickerModal}
+        >
+          <View style={styles.dateTimePickerContainer}>
+            <Icon name="calendar-outline" size={20} color="#637D92" style={styles.dateTimePickerIcon} />
+            <View style={styles.dateTimePickerTextContainer}>
+              <Text style={styles.dateTimePickerLabel}>Date</Text>
+              <Text style={styles.dateTimePickerValue}>{formatDate(newReminderTime)}</Text>
+            </View>
+            <Icon name="chevron-down" size={20} color="#637D92" />
+          </View>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.dateTimePicker}
+          onPress={showTimePickerModal}
+        >
+          <View style={styles.dateTimePickerContainer}>
+            <Icon name="time-outline" size={20} color="#637D92" style={styles.dateTimePickerIcon} />
+            <View style={styles.dateTimePickerTextContainer}>
+              <Text style={styles.dateTimePickerLabel}>Time</Text>
+              <Text style={styles.dateTimePickerValue}>{formatTime(newReminderTime)}</Text>
+            </View>
+            <Icon name="chevron-down" size={20} color="#637D92" />
+          </View>
+        </TouchableOpacity>
+        
+        <View style={styles.pickerContainer}>
+          {showDatePicker && (
+            <Animated.View style={{ opacity: fadeAnim, position: 'absolute', width: '100%' }}>
+              <DateTimePicker
+                testID="datePicker"
+                value={newReminderTime}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={handleDateChange}
+              />
+            </Animated.View>
+          )}
+          
+          {showTimePicker && (
+            <Animated.View style={{ opacity: fadeAnim, position: 'absolute', width: '100%' }}>
+              <DateTimePicker
+                testID="timePicker"
+                value={newReminderTime}
+                mode="time"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={handleTimeChange}
+                is24Hour={false}
+              />
+            </Animated.View>
+          )}
+          
+          {!showDatePicker && !showTimePicker && <View style={styles.placeholderPicker} />}
+        </View>
+      </Dialog.Content>
+      
+      <Dialog.Actions style={styles.buttonContainer}>
+        <Button 
+          onPress={() => setDialogVisible(false)}
+          color="#637D92"
+          style={styles.button}
+        >
+          Cancel
+        </Button>
+        <Button 
+          onPress={editMode ? editReminder : addReminder}
+          color="#FFFFFF"
+          style={[styles.button, styles.sendButton]}
+          mode="contained"
+        >
+          {editMode ? 'Edit' : 'Add'}
+        </Button>
+      </Dialog.Actions>
+    </Dialog>
+  ), [dialogVisible, editMode, newReminderTitle, newReminderTime, showDatePicker, showTimePicker]);
+
   return (
     <PaperProvider>
-      <View style={styles.container}>
-        <FlatList
-          data={reminders}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <View style={styles.reminderBanner}>
-              {renderCheckbox(item, index)}
-              <View style={styles.reminderDetails}>
-                <Text style={[styles.reminderTitle, item.completed && styles.completedText]}>{item.title}</Text>
-                <Text style={styles.reminderTime}>{item.time}</Text>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          {reminders.length > 0 && (
+            <View style={styles.headerContainer}>
+              <View style={styles.headerTopRow}>
+                <Text style={styles.reminderCountText}>
+                  {getReminderCountText()}
+                </Text>
+                
+                <View style={styles.headerActions}>
+                  {(selectionMode || selectedReminders.length > 0) && (
+                    <>
+                      {selectionMode && (
+                        <TouchableOpacity 
+                          style={styles.headerButton}
+                          onPress={toggleSelectionMode}
+                        >
+                          <Icon name="close" size={22} color="#637D92" />
+                        </TouchableOpacity>
+                      )}
+                      
+                      {selectedReminders.length > 0 && (
+                        <TouchableOpacity 
+                          style={[styles.headerButton, styles.deleteButton]}
+                          onPress={deleteSelectedReminders}
+                          activeOpacity={0.6}
+                        >
+                          <Icon name="trash" size={22} color="#885053" />
+                          <Text style={styles.deleteButtonText}>
+                            Delete ({selectedReminders.length})
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </>
+                  )}
+
+                  {completedRemindersCount > 0 && !selectionMode && (
+                    <TouchableOpacity 
+                      style={[styles.headerButton, styles.deleteCompletedButton]}
+                      onPress={deleteCompletedReminders}
+                      activeOpacity={0.6}
+                    >
+                      <Icon name="trash" size={22} color="#885053" />
+                      <Text style={styles.deleteButtonText}>
+                        Delete ({completedRemindersCount})
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
-              <Button icon="pencil" onPress={() => openEditDialog(index)} />
-              <Button icon="delete" color="#f44336" onPress={() => deleteReminder(index)} />
+              
+              <View style={styles.reminderStatusIndicator}>
+                {reminders.length > 0 && (
+                  <>
+                    {activeRemindersCount > 0 && (
+                      <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 15}}>
+                        <View style={[styles.statusDot, styles.pendingDot]} />
+                        <Text style={styles.reminderSubtitleText}>
+                          {activeRemindersCount} pending
+                        </Text>
+                      </View>
+                    )}
+                    
+                    {completedRemindersCount > 0 && (
+                      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <View style={[styles.statusDot, styles.completedDot]} />
+                        <Text style={styles.reminderSubtitleText}>
+                          {completedRemindersCount} completed
+                        </Text>
+                      </View>
+                    )}
+                  </>
+                )}
+              </View>
             </View>
           )}
-        />
-        <TouchableOpacity style={styles.plusButton} onPress={() => setDialogVisible(true)}>
-          <Icon name="add" size={30} color="#fff" />
-        </TouchableOpacity>
-        <Portal>
-          <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
-            <Dialog.Title>{editMode ? 'Edit Reminder' : 'Add Reminder'}</Dialog.Title>
-            <Dialog.Content>
-              <TextInput
-                  label="Title"
-                  value={newReminderTitle}
-                  onChangeText={(text) => setNewReminderTitle(text)}
-                  style={styles.input}
-                  autoCapitalize="sentences"
-                  blurOnSubmit={false}
-                  autoCorrect={true}
-                  multiline={false}
-                  returnKeyType="done"
-                  clearButtonMode="while-editing"
-                  keyboardType="default"
-                  maxLength={100}
-                  enablesReturnKeyAutomatically={true}
-                  placeholder="Enter reminder title"
-              />
-              
-              <TouchableOpacity 
-                style={styles.dateTimePicker}
-                onPress={showDatePickerModal}
+
+          <FlatList
+            data={reminders}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                onLongPress={() => {
+                  if (!selectionMode) {
+                    setSelectionMode(true);
+                    setSelectedReminders([index]);
+                  } else {
+                    toggleReminderSelection(index);
+                  }
+                }}
+                onPress={() => {
+                  if (selectionMode) {
+                    toggleReminderSelection(index);
+                  } else {
+                  }
+                }}
+                activeOpacity={0.7}
+                delayLongPress={300}
               >
-                <View style={styles.dateTimePickerContainer}>
-                  <Icon name="calendar-outline" size={20} color="#777DA7" style={styles.dateTimePickerIcon} />
-                  <View style={styles.dateTimePickerTextContainer}>
-                    <Text style={styles.dateTimePickerLabel}>Date</Text>
-                    <Text style={styles.dateTimePickerValue}>{formatDate(newReminderTime)}</Text>
+                <View style={[
+                  styles.reminderBanner,
+                  selectedReminders.includes(index) && styles.selectedReminderBanner
+                ]}>
+                  {selectionMode ? (
+                    <View style={[
+                      styles.selectionCheckbox, 
+                      selectedReminders.includes(index) && styles.selectionCheckboxSelected
+                    ]}>
+                      {selectedReminders.includes(index) && <Icon name="checkmark" size={16} color="#FFFFFF" />}
+                    </View>
+                  ) : (
+                    renderCheckbox(item, index)
+                  )}
+                  
+                  <View style={styles.reminderDetails}>
+                    <Text style={[
+                      styles.reminderTitle, 
+                      item.completed && styles.completedText
+                    ]}>
+                      {item.title}
+                    </Text>
+                    <Text style={styles.reminderTime}>{formatReminderTime(item.time)}</Text>
                   </View>
-                  <Icon name="chevron-down" size={20} color="#777DA7" />
+                  
+                  {!selectionMode && (
+                    <View style={styles.buttonActions}>
+                      <Button 
+                        icon="pencil" 
+                        onPress={() => openEditDialog(index)} 
+                        textColor="#885053"
+                        style={styles.actionButton}
+                      />
+                      <Button 
+                        icon="delete" 
+                        onPress={() => deleteReminder(index)} 
+                        textColor="#885053"
+                        style={styles.actionButton}
+                      />
+                    </View>
+                  )}
                 </View>
               </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.dateTimePicker}
-                onPress={showTimePickerModal}
-              >
-                <View style={styles.dateTimePickerContainer}>
-                  <Icon name="time-outline" size={20} color="#777DA7" style={styles.dateTimePickerIcon} />
-                  <View style={styles.dateTimePickerTextContainer}>
-                    <Text style={styles.dateTimePickerLabel}>Time</Text>
-                    <Text style={styles.dateTimePickerValue}>{formatTime(newReminderTime)}</Text>
-                  </View>
-                  <Icon name="chevron-down" size={20} color="#777DA7" />
-                </View>
-              </TouchableOpacity>
-              
-              {/* Container with fixed height for the picker */}
-              <View style={styles.pickerContainer}>
-                {showDatePicker && (
-                  <Animated.View style={{ opacity: fadeAnim, position: 'absolute', width: '100%' }}>
-                    <DateTimePicker
-                      testID="datePicker"
-                      value={newReminderTime}
-                      mode="date"
-                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                      onChange={handleDateChange}
-                    />
-                  </Animated.View>
-                )}
-                
-                {showTimePicker && (
-                  <Animated.View style={{ opacity: fadeAnim, position: 'absolute', width: '100%' }}>
-                    <DateTimePicker
-                      testID="timePicker"
-                      value={newReminderTime}
-                      mode="time"
-                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                      onChange={handleTimeChange}
-                      is24Hour={false}
-                    />
-                  </Animated.View>
-                )}
-                
-                {/* This is a placeholder to maintain height when no picker is visible */}
-                {!showDatePicker && !showTimePicker && <View style={styles.placeholderPicker} />}
+            )}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyContainer}>
+                <Icon name="calendar-outline" size={80} color="#885053" style={styles.emptyIcon} />
+                <Text style={styles.emptyTitle}>No Reminders Yet</Text>
+                <Text style={styles.emptyText}>
+                  Tap the + button below to add your first reminder.
+                </Text>
+                <TouchableOpacity 
+                  style={styles.emptyButton}
+                  onPress={() => setDialogVisible(true)}
+                >
+                  <Text style={styles.emptyButtonText}>Create Reminder</Text>
+                </TouchableOpacity>
               </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={() => setDialogVisible(false)}>Cancel</Button>
-              <Button onPress={editMode ? editReminder : addReminder}>{editMode ? 'Edit' : 'Add'}</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
+            )}
+            contentContainerStyle={reminders.length === 0 ? {flex: 1} : {}}
+          />
+          <TouchableOpacity style={styles.plusButton} onPress={() => setDialogVisible(true)}>
+            <Icon name="add" size={30} color="#fff" />
+          </TouchableOpacity>
+          
+          <Portal>
+            {ReminderDialog}
+          </Portal>
+        </View>
+      </SafeAreaView>
     </PaperProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#E8E9F3', padding: 20 },
-  reminderBanner: { flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: '#e0e0e0', borderRadius: 10, marginVertical: 5 },
-  reminderDetails: { flex: 1, marginLeft: 10 },
-  reminderTitle: { fontSize: 16, fontWeight: 'bold' },
-  reminderTime: { fontSize: 14, color: '#555' },
-  completedText: { textDecorationLine: 'line-through', color: '#999' },
-  plusButton: { position: 'absolute', bottom: 20, right: 20, width: 50, height: 50, borderRadius: 25, backgroundColor: '#777DA7', justifyContent: 'center', alignItems: 'center' },
-  input: { marginBottom: 15 },
-  checkboxContainer: { 
-    width: 24,
-    height: 24,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: '#777DA7',
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent'
-  },
-  checkboxContainerChecked: {
-    backgroundColor: '#777DA7',
-    borderColor: '#777DA7',
-  },
-  modalView: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
-  dateTimePicker: {
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#cccccc',
-    borderRadius: 4,
-    padding: 12,
-  },
-  dateTimePickerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dateTimePickerIcon: {
-    marginRight: 10,
-  },
-  dateTimePickerTextContainer: {
-    flex: 1,
-  },
-  dateTimePickerLabel: {
-    fontSize: 12,
-    color: '#777',
-  },
-  dateTimePickerValue: {
-    fontSize: 16,
-    color: '#000',
-  },
-  pickerContainer: {
-    height: 215,  // Set this to match the height of your pickers
-    justifyContent: 'center',
-    marginTop: 10,
-    position: 'relative', // Important for absolute positioning of children
-  },
-  placeholderPicker: {
-    height: 200,  // Height close to DateTimePicker height
-  }
-});
 
 export default RemindersScreen;

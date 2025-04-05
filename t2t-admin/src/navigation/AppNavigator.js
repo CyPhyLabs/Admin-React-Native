@@ -39,7 +39,7 @@ const TabNavigator = () => (
     <Tab.Screen
       name="Reminders"
       component={RemindersScreen}
-      options={{headerShown: true, tabBarIcon: ({ color, size }) => (<Icon name="alarm-outline" color={color} size={size} /> ),
+      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="alarm-outline" color={color} size={size} /> ),
       }}
     />
     <Tab.Screen
