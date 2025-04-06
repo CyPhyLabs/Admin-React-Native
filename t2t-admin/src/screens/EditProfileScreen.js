@@ -1,51 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ProfilePictureSelector from '../components/ProfilePictureSelector';
+import { useUser } from '../context/UserContext';
 
 const EditProfileScreen = ({ navigation }) => {
-  const [name, setName] = useState('John Doe');
-  const [jobTitle, setJobTitle] = useState('Software Engineer');
-  const [department, setDepartment] = useState('IT Department');
-  const [email, setEmail] = useState('john.doe@example.com');
-  const [profileImage, setProfileImage] = useState('https://randomuser.me/api/portraits/men/32.jpg');
+  const { userData, updateUserData } = useUser();
+  
+  // Use useEffect to update local state whenever userData changes
+  const [name, setName] = useState(userData.name);
+  const [jobTitle, setJobTitle] = useState(userData.jobTitle);
+  const [department, setDepartment] = useState(userData.department);
+  const [email, setEmail] = useState(userData.email);
+  const [profileImage, setProfileImage] = useState(userData.profileImage);
   const [showPictureSelector, setShowPictureSelector] = useState(false);
+  
+  // Add this useEffect to sync local state with userData
+  useEffect(() => {
+    setName(userData.name);
+    setJobTitle(userData.jobTitle);
+    setDepartment(userData.department);
+    setEmail(userData.email);
+    setProfileImage(userData.profileImage);
+  }, [userData]);
 
   useEffect(() => {
-    // Load profile data from AsyncStorage
-    const loadProfileData = async () => {
-      try {
-        const profileData = await AsyncStorage.getItem('profileData');
-        if (profileData) {
-          const data = JSON.parse(profileData);
-          setName(data.name || 'John Doe');
-          setJobTitle(data.jobTitle || 'Software Engineer');
-          setDepartment(data.department || 'IT Department');
-          setEmail(data.email || 'john.doe@example.com');
-          setProfileImage(data.profileImage || 'https://randomuser.me/api/portraits/men/32.jpg');
-        }
-      } catch (error) {
-        console.log('Error loading profile data:', error);
-      }
-    };
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Refresh the state with current userData
+      setName(userData.name);
+      setJobTitle(userData.jobTitle);
+      setDepartment(userData.department);
+      setEmail(userData.email);
+      setProfileImage(userData.profileImage);
+    });
 
-    loadProfileData();
-  }, []);
+    return unsubscribe;
+  }, [navigation, userData]);
 
   const saveProfile = async () => {
-    try {
-      const profileData = {
-        name,
-        jobTitle,
-        department,
-        email,
-        profileImage
-      };
-      await AsyncStorage.setItem('profileData', JSON.stringify(profileData));
+    const success = await updateUserData({
+      name,
+      jobTitle,
+      department,
+      email,
+      profileImage
+    });
+    
+    if (success) {
       navigation.goBack();
-    } catch (error) {
-      console.log('Error saving profile data:', error);
     }
   };
 

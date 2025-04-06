@@ -10,7 +10,11 @@ export const UserProvider = ({ children }) => {
     department: 'IT Department',
     email: 'john.doe@example.com',
     profileImage: 'https://randomuser.me/api/portraits/men/32.jpg',
-    phoneNumber: '+1 (555) 123-4567'
+    phoneNumber: '+1 (555) 123-4567',
+    dob: '01/15/1985',
+    address: '123 Main St, Anytown, USA',
+    emergency: 'Jane Doe (555) 123-4567',
+    allergies: 'None'
   });
 
   useEffect(() => {
@@ -20,16 +24,26 @@ export const UserProvider = ({ children }) => {
   const loadUserData = async () => {
     try {
       const profileData = await AsyncStorage.getItem('profileData');
+      const personalInfo = await AsyncStorage.getItem('personalInfo');
       const phoneNumber = await AsyncStorage.getItem('phoneNumber');
       
+      let updatedData = {...userData};
+      
       if (profileData) {
-        const parsedData = JSON.parse(profileData);
-        setUserData(prevData => ({
-          ...prevData,
-          ...parsedData,
-          phoneNumber: phoneNumber || prevData.phoneNumber
-        }));
+        const parsedProfile = JSON.parse(profileData);
+        updatedData = {...updatedData, ...parsedProfile};
       }
+      
+      if (personalInfo) {
+        const parsedPersonal = JSON.parse(personalInfo);
+        updatedData = {...updatedData, ...parsedPersonal};
+      }
+      
+      if (phoneNumber) {
+        updatedData.phoneNumber = phoneNumber;
+      }
+      
+      setUserData(updatedData);
     } catch (error) {
       console.log('Error loading user data:', error);
     }
@@ -40,16 +54,29 @@ export const UserProvider = ({ children }) => {
       const updatedData = { ...userData, ...newData };
       setUserData(updatedData);
       
-      // Save to AsyncStorage
-      await AsyncStorage.setItem('profileData', JSON.stringify({
-        name: updatedData.name,
-        jobTitle: updatedData.jobTitle,
-        department: updatedData.department,
-        email: updatedData.email,
-        profileImage: updatedData.profileImage,
-      }));
+      // Determine which AsyncStorage keys need updating
+      if (newData.name || newData.jobTitle || newData.department || 
+          newData.email || newData.profileImage) {
+        await AsyncStorage.setItem('profileData', JSON.stringify({
+          name: updatedData.name,
+          jobTitle: updatedData.jobTitle,
+          department: updatedData.department,
+          email: updatedData.email,
+          profileImage: updatedData.profileImage,
+        }));
+      }
       
-      // If phone number is updated
+      if (newData.name || newData.dob || newData.address || 
+          newData.emergency || newData.allergies) {
+        await AsyncStorage.setItem('personalInfo', JSON.stringify({
+          name: updatedData.name,
+          dob: updatedData.dob,
+          address: updatedData.address,
+          emergency: updatedData.emergency,
+          allergies: updatedData.allergies,
+        }));
+      }
+      
       if (newData.phoneNumber) {
         await AsyncStorage.setItem('phoneNumber', newData.phoneNumber);
       }

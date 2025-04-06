@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useUser } from '../context/UserContext';
 
 const PhoneNumberScreen = ({ navigation }) => {
-  const [phoneNumber, setPhoneNumber] = useState('+1 (555) 123-4567');
+  const { userData, updateUserData } = useUser();
+  const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber);
   const [isEditing, setIsEditing] = useState(false);
   
   useEffect(() => {
@@ -29,11 +31,11 @@ const PhoneNumberScreen = ({ navigation }) => {
       return;
     }
 
-    try {
-      await AsyncStorage.setItem('phoneNumber', phoneNumber);
+    // Update phone number through context instead of directly with AsyncStorage
+    const success = await updateUserData({ phoneNumber });
+    
+    if (success) {
       setIsEditing(false);
-    } catch (error) {
-      console.log('Error saving phone number:', error);
     }
   };
 

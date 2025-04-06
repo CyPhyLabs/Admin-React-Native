@@ -6,10 +6,12 @@ import { useNavigation } from '@react-navigation/native';
 import { SettingsStyles as styles } from '../styles/SettingsStyles'; // Import the external styles
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProfilePictureSelector from '../components/ProfilePictureSelector';
+import { useUser } from '../context/UserContext';
 
 const SettingsScreen = () => {
   const { logout } = useContext(AuthContext);
   const navigation = useNavigation();
+  const { userData } = useUser();
   
   // State variables for different setting options
   const [fontSizeIndex, setFontSizeIndex] = useState(1); // 0: Small, 1: Medium, 2: Large
@@ -20,10 +22,6 @@ const SettingsScreen = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [profileImage, setProfileImage] = useState('https://randomuser.me/api/portraits/men/32.jpg');
   const [showPictureSelector, setShowPictureSelector] = useState(false);
-  const [userName, setUserName] = useState('John Doe');
-  const [userPosition, setUserPosition] = useState('Software Engineer');
-  const [userDepartment, setUserDepartment] = useState('IT Department');
-  const [phoneNumber, setPhoneNumber] = useState('+1 (555) 123-4567');
 
   useEffect(() => {
     const loadProfileData = async () => {
@@ -31,15 +29,7 @@ const SettingsScreen = () => {
         const profileData = await AsyncStorage.getItem('profileData');
         if (profileData) {
           const data = JSON.parse(profileData);
-          setUserName(data.name || 'John Doe');
-          setUserPosition(data.jobTitle || 'Software Engineer');
-          setUserDepartment(data.department || 'IT Department');
           setProfileImage(data.profileImage || 'https://randomuser.me/api/portraits/men/32.jpg');
-        }
-
-        const savedPhoneNumber = await AsyncStorage.getItem('phoneNumber');
-        if (savedPhoneNumber) {
-          setPhoneNumber(savedPhoneNumber);
         }
       } catch (error) {
         console.log('Error loading profile data:', error);
@@ -186,9 +176,9 @@ const SettingsScreen = () => {
           </View>
           
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>{userName}</Text>
-            <Text style={styles.profilePosition}>{userPosition}</Text>
-            <Text style={styles.profileDepartment}>{userDepartment}</Text>
+            <Text style={styles.profileName}>{userData.name}</Text>
+            <Text style={styles.profilePosition}>{userData.jobTitle}</Text>
+            <Text style={styles.profileDepartment}>{userData.department}</Text>
           </View>
           
           <TouchableOpacity 
@@ -226,7 +216,7 @@ const SettingsScreen = () => {
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={styles.settingText}>Phone Number</Text>
-              <Text style={styles.settingSubtext}>{phoneNumber}</Text>
+              <Text style={styles.settingSubtext}>{userData.phoneNumber}</Text>
             </View>
             <Icon name="chevron-forward" size={20} color="#637D92" />
           </TouchableOpacity>
