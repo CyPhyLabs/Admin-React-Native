@@ -1,16 +1,229 @@
 import { StyleSheet } from 'react-native';
 
-const SettingsStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f5f5f5',
-      },
-      text: {
-        fontSize: 24,
-        fontWeight: 'bold',
-      },
-    });
+export const SettingsStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#D7E3F1',
+  },
+  header: {
+    backgroundColor: '#FFFFFF',
+    paddingTop: 20,
+    paddingBottom: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(99, 125, 146, 0.1)',
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#29384B',
+  },
+  profileSection: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(99, 125, 146, 0.1)',
+  },
+  profileImageContainer: {
+    position: 'relative',
+    marginBottom: 15,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#F7F7F7',
+  },
+  editProfileImageButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#885053',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  profileInfo: {
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  profileName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#29384B',
+    marginBottom: 4,
+  },
+  profilePosition: {
+    fontSize: 16,
+    color: '#637D92',
+    marginBottom: 2,
+  },
+  profileDepartment: {
+    fontSize: 14,
+    color: '#637D92',
+    opacity: 0.8,
+  },
+  editProfileButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(136, 80, 83, 0.1)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  editProfileText: {
+    color: '#885053',
+    fontWeight: '600',
+    marginRight: 8,
+  },
+  sectionContainer: {
+    backgroundColor: '#FFFFFF',
+    marginBottom: 15,
+    paddingVertical: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#29384B',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(99, 125, 146, 0.05)',
+  },
+  settingIconContainer: {
+    width: 40,
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  settingTextContainer: {
+    flex: 1,
+  },
+  settingText: {
+    fontSize: 16,
+    color: '#29384B',
+  },
+  settingSubtext: {
+    fontSize: 13,
+    color: '#637D92',
+    marginTop: 2,
+  },
+  fontSizeControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fontSizeButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(136, 80, 83, 0.1)',
+    borderRadius: 18,
+    marginLeft: 10,
+  },
+  fontSizeButtonDisabled: {
+    opacity: 0.5,
+  },
+  fontSizeButtonText: {
+    fontWeight: 'bold',
+    color: '#885053',
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#885053',
+    padding: 15,
+    marginHorizontal: 20,
+    marginVertical: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  logoutIcon: {
+    marginRight: 10,
+  },
+  logoutButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  versionInfo: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  versionText: {
+    color: '#637D92',
+    fontSize: 13,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    width: '90%',
+    maxHeight: '80%',
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  closeIconContainer: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 1,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#29384B',
+    marginBottom: 20,
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  modalScrollContent: {
+    maxHeight: '80%',
+  },
+  modalSubtitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#885053',
+    marginTop: 15,
+    marginBottom: 5,
+  },
+  modalText: {
+    fontSize: 15,
+    color: '#29384B',
+    lineHeight: 22,
+    marginBottom: 15,
+  },
+});
 
 export default SettingsStyles;

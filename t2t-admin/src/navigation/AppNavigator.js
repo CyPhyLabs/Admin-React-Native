@@ -11,6 +11,10 @@ import NotificationsScreen from '../screens/NotificationsScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
+import EditProfileScreen from '../screens/EditProfileScreen';
+import PersonalInfoScreen from '../screens/PersonalInfoScreen';
+import PhoneNumberScreen from '../screens/PhoneNumberScreen';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -65,6 +69,10 @@ const AppNavigator = () => {
                         { <Stack.Screen name="Register" component={RegisterScreen} /> }
                      </> 
                  )} 
+                <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="PhoneNumber" component={PhoneNumberScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     );
