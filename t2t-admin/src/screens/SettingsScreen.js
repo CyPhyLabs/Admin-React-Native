@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, ScrollView, Image, Switch, Alert, Modal, S
 import Icon from 'react-native-vector-icons/Ionicons';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
-import { SettingsStyles as styles } from '../styles/SettingsStyles'; // Import the external styles
+import { SettingsStyles as styles } from '../styles/SettingsStyles'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProfilePictureSelector from '../components/ProfilePictureSelector';
 import { useUser } from '../context/UserContext';
@@ -13,11 +13,7 @@ const SettingsScreen = () => {
   const navigation = useNavigation();
   const { userData } = useUser();
   
-  // State variables for different setting options
-  const [fontSizeIndex, setFontSizeIndex] = useState(1); // 0: Small, 1: Medium, 2: Large
-  const [fontSizes] = useState(['Small', 'Medium', 'Large']);
   const [darkMode, setDarkMode] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [profileImage, setProfileImage] = useState('https://randomuser.me/api/portraits/men/32.jpg');
@@ -238,32 +234,6 @@ const SettingsScreen = () => {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Appearance</Text>
           
-          <TouchableOpacity style={styles.settingItem}>
-            <View style={styles.settingIconContainer}>
-              <Icon name="text-outline" size={22} color="#637D92" />
-            </View>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingText}>Font Size</Text>
-              <Text style={styles.settingSubtext}>{fontSizes[fontSizeIndex]}</Text>
-            </View>
-            <View style={styles.fontSizeControls}>
-              <TouchableOpacity 
-                onPress={() => setFontSizeIndex(Math.max(0, fontSizeIndex - 1))}
-                disabled={fontSizeIndex === 0}
-                style={[styles.fontSizeButton, fontSizeIndex === 0 && styles.fontSizeButtonDisabled]}
-              >
-                <Text style={styles.fontSizeButtonText}>A-</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={() => setFontSizeIndex(Math.min(2, fontSizeIndex + 1))}
-                disabled={fontSizeIndex === 2}
-                style={[styles.fontSizeButton, fontSizeIndex === 2 && styles.fontSizeButtonDisabled]}
-              >
-                <Text style={styles.fontSizeButtonText}>A+</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-          
           <View style={styles.settingItem}>
             <View style={styles.settingIconContainer}>
               <Icon name="moon-outline" size={22} color="#637D92" />
@@ -279,20 +249,6 @@ const SettingsScreen = () => {
             />
           </View>
           
-          <View style={styles.settingItem}>
-            <View style={styles.settingIconContainer}>
-              <Icon name="notifications-outline" size={22} color="#637D92" />
-            </View>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingText}>Notifications</Text>
-            </View>
-            <Switch
-              trackColor={{ false: "#D0D0D0", true: "rgba(136, 80, 83, 0.4)" }}
-              thumbColor={notificationsEnabled ? "#885053" : "#F5F5F5"}
-              onValueChange={() => setNotificationsEnabled(!notificationsEnabled)}
-              value={notificationsEnabled}
-            />
-          </View>
         </View>
 
         <View style={styles.sectionContainer}>
