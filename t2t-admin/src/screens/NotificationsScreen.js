@@ -47,17 +47,22 @@ const NotificationsScreen = () => {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity 
-            onPress={() => openModal(item)} 
-            style={[
-                HomeStyles.notificationItem, 
-                item.priority === 'high' && { backgroundColor: 'rgb(254, 233, 225)' }
-            ]}
-        >
-            <View style={HomeStyles.notificationContent}>
-                <Text style={HomeStyles.notificationTitle}>{item.title}</Text>
-                <Text style={HomeStyles.notificationBody}>{item.body}</Text>
+        onPress={() => openModal(item)} 
+        style={[
+            HomeStyles.notificationItem, 
+            item.priority === 'high' && { backgroundColor: 'rgb(254, 233, 225)' }
+        ]}
+    >
+        <View style={HomeStyles.notificationContent}>
+            <Text style={HomeStyles.notificationTitle}>{item.title}</Text>
+            <Text style={HomeStyles.notificationBody}>{item.body}</Text>
+        </View>
+        {item.priority === 'high' && (
+            <View style={NotificationStyles.priorityIconContainer}>
+                <Icon name="alert-circle" size={24} color="#FF4500" />
             </View>
-        </TouchableOpacity>
+        )}
+    </TouchableOpacity>
     );
 
     return (

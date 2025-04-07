@@ -47,6 +47,14 @@ const NotificationStyles = StyleSheet.create({
       color: 'gray',
       marginBottom: 16,
   },
+  priorityIconContainer: {
+    position: 'absolute',
+    right: 12,
+    top: '75%',
+    transform: [{ translateY: -12 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+},
 
 });
 

@@ -41,6 +41,7 @@ const HomeScreen = () => {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPriority, setIsPriority] = useState(false); // This is your priority state
+  const [title, setTitle] = useState(''); // This is your title state
   // #endregion
 
   // #region Navigation Hook
@@ -125,7 +126,7 @@ const HomeScreen = () => {
   const handleSendMessage = useCallback(async () => {
     try {
       const response = await sendMessage({
-        title: 'New Message',
+        title: title,
         target_audience: recipient,
         body: message,
         priority: isPriority,
@@ -134,6 +135,7 @@ const HomeScreen = () => {
     
       // Avoid setting state in a way that triggers re-renders unnecessarily
       setMessage(''); 
+      setTitle(''); // Reset title after sending
       setRecipient('');
       setIsPriority(false);
     } catch (error) {
@@ -159,6 +161,8 @@ const HomeScreen = () => {
     ),
     [username, toggleSettingsModal],
   );
+
+
 
   const NotificationsSection = useMemo(() => (
     <View style={HomeStyles.sectionContainer}>
@@ -191,7 +195,7 @@ const HomeScreen = () => {
           .filter(notification => (activeNotificationTab === 'unread' ? !notification.read : notification.read))
           .slice(0, 3) // Show only the latest 3 notifications
           .map((notification, index) => (
-            <View key={index} style={[HomeStyles.notificationItem, notification.priority === 'low' && { borderColor: 'rgba(255, 0, 0, 0.42)' }, { borderRadius: 10 }, { borderWidth: 2 }, ]}>
+            <View key={index} style={[HomeStyles.notificationItem]}>
               <View style={HomeStyles.notificationContent}>
                 <Text style={HomeStyles.notificationTitle}>{notification.title}</Text>
                 <Text style={HomeStyles.notificationBody}>{notification.body}</Text>
@@ -274,11 +278,22 @@ const HomeScreen = () => {
               onPress={() => {
                 toggleAddModal();
                 setMessage('');
+                setTitle(''); // Reset title when closing the modal
               }}
             >
               <Icon name="close" size={24} color="#885053" />
             </TouchableOpacity>
             <Text style={HomeStyles.modalTitle}>Add New Item</Text>
+
+             <TextInput
+              placeholder="Title"
+              value={title}
+              onChangeText={(text) => setTitle(text)}
+              style={[HomeStyles.textInput, { height: 40 }]}
+              maxLength={100}
+              autoCapitalize="sentences"
+              returnKeyType="next"
+            />
 
             <TextInput
               placeholder="Write your message here..."
@@ -359,6 +374,8 @@ const HomeScreen = () => {
       toggleAddModal,
       message,
       setMessage,
+      title,
+      setTitle,
       recipient,
       isPriority, // Add isPriority to the dependency array
       isRecipientDropdownVisible,

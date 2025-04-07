@@ -15,25 +15,25 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-
 const TabNavigator = () => (
-  <Tab.Navigator>
+  <Tab.Navigator initialRouteName='Home'>
     <Tab.Screen
       name="Notifications"
       component={NotificationsScreen}
       options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="notifications-outline" color={color} size={size} />),
       }}
     />
-     <Tab.Screen
-      name="Home"
-      component={HomeScreen}
-      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="home-outline" color={color} size={size} />),
-      }}
-    />
+     
     <Tab.Screen
       name="Events"
       component={CalendarScreen}
       options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="calendar-outline" color={color} size={size} /> ),
+      }}
+    />
+    <Tab.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{headerShown: false, tabBarIcon: ({ color, size }) => (<Icon name="home-outline" color={color} size={size} />),
       }}
     />
     <Tab.Screen
