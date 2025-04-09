@@ -1,18 +1,5 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-} from 'react-native';
+import React, {useEffect, useState, useContext, useCallback, useMemo,} from 'react';
+import {View,Text,SafeAreaView,TouchableOpacity,Modal,TextInput} from 'react-native';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -23,21 +10,20 @@ import { fetchMessages } from '../services/sendMessage';
 import { Switch } from 'react-native';
 import { Platform } from 'react-native';
 import { sendMessage } from '../services/sendMessage';
+
+
 const HomeScreen = () => {
   // #region Authentication and User Data
   const { logout } = useContext(AuthContext);
   const [username, setUsername] = useState('');
-  const { getItem } = useAsyncStorage('username');
+  const { getItem: getStoredUsername } = useAsyncStorage('username');
   // #endregion
 
   // #region State Variables
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [message, setMessage] = useState('');
-  const [activeNotificationTab, setActiveNotificationTab] = useState('unread');
   const [recipient, setRecipient] = useState('everyone');
-  const [isRecipientDropdownVisible, setIsRecipientDropdownVisible] =
-    useState(false);
+  const [isRecipientDropdownVisible, setIsRecipientDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPriority, setIsPriority] = useState(false); // This is your priority state
@@ -51,14 +37,14 @@ const HomeScreen = () => {
   // #region useEffect Hooks
   useEffect(() => {
     const fetchUsername = async () => {
-      const storedUsername = await getItem();
+      const storedUsername = await getStoredUsername();
       if (storedUsername) {
         setUsername(storedUsername);
       }
     };
 
     fetchUsername();
-  }, [getItem]);
+  }, [getStoredUsername]);
 
   useEffect(() => {
     fetchNotifications();
@@ -130,6 +116,7 @@ const HomeScreen = () => {
         target_audience: recipient,
         body: message,
         priority: isPriority,
+        created_at: new Date().toISOString(),
       });
       console.log('API Response:', response);
     
@@ -150,13 +137,6 @@ const HomeScreen = () => {
         <View style={HomeStyles.usernameContainer}>
           <Text style={HomeStyles.username}>Welcome, {username}!</Text>
         </View>
-
-        <TouchableOpacity
-          style={HomeStyles.settingsButton}
-          onPress={toggleSettingsModal}
-        >
-          <Icon name="settings-outline" size={24} color="#885053" />
-        </TouchableOpacity>
       </View>
     ),
     [username, toggleSettingsModal],
@@ -171,28 +151,10 @@ const HomeScreen = () => {
         <Icon name="notifications-outline" size={20} color="#885053" style={HomeStyles.sectionIcon} />
       </View>
 
-      <View style={HomeStyles.ovalContainer}>
-        <TouchableOpacity
-          style={[HomeStyles.tab, activeNotificationTab === 'unread' && HomeStyles.activeTab]}
-          onPress={() => setActiveNotificationTab('unread')}
-        >
-          <Text style={[HomeStyles.tabText, activeNotificationTab === 'unread' && HomeStyles.activeTabText]}>
-            Unread
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[HomeStyles.tab, activeNotificationTab === 'read' && HomeStyles.activeTab]}
-          onPress={() => setActiveNotificationTab('read')}
-        >
-          <Text style={[HomeStyles.tabText, activeNotificationTab === 'read' && HomeStyles.activeTabText]}>
-            Read
-          </Text>
-        </TouchableOpacity>
-      </View>
+     
 
       {notifications.length > 0 ? (
         notifications
-          .filter(notification => (activeNotificationTab === 'unread' ? !notification.read : notification.read))
           .slice(0, 3) // Show only the latest 3 notifications
           .map((notification, index) => (
             <View key={index} style={[HomeStyles.notificationItem]}>
@@ -206,7 +168,6 @@ const HomeScreen = () => {
         <Text style={HomeStyles.noNotificationsText}>
           {isLoading ? "Loading notifications" : "No notifications"}
         </Text>
-
       )}
       <TouchableOpacity
         style={HomeStyles.viewAllButton}
@@ -216,7 +177,7 @@ const HomeScreen = () => {
         <Icon name="chevron-forward" size={16} color="#29384B" />
       </TouchableOpacity>
     </View>
-  ), [activeNotificationTab, notifications, isLoading]);
+  ), [notifications, isLoading]);
 
   const UpcomingEventsSection = useMemo(
     () => (
@@ -233,31 +194,6 @@ const HomeScreen = () => {
       </View>
     ),
     [],
-  );
-
-  const SettingsModal = useMemo(
-    () => (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isSettingsModalVisible}
-        onRequestClose={toggleSettingsModal}
-      >
-        <View style={HomeStyles.modalContainer}>
-          <View style={HomeStyles.modalContent}>
-            <Text style={HomeStyles.modalTitle}>Settings</Text>
-            <Button title="Logout" onPress={logout} />
-            <TouchableOpacity
-              onPress={toggleSettingsModal}
-              style={HomeStyles.closeButton}
-            >
-              <Text style={HomeStyles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    ),
-    [isSettingsModalVisible, toggleSettingsModal, logout],
   );
 
   const AddItemModal = useMemo(
@@ -399,7 +335,6 @@ const HomeScreen = () => {
         <Icon name="add" size={30} color="#FFFFFF" />
       </TouchableOpacity>
 
-      {SettingsModal}
       {AddItemModal}
     </SafeAreaView>
   );

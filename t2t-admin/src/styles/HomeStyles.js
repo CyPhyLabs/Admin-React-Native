@@ -1,7 +1,8 @@
 // src/screens/HomeScreenStyles.js
 import { StyleSheet } from 'react-native';
 
-export const HomeStyles = StyleSheet.create({
+const HomeStyles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#D7E3F1',
@@ -54,7 +55,7 @@ export const HomeStyles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 5,
     width: '100%',
-    marginBottom: 15, 
+    marginBottom: 15,
   },
   tab: {
     flex: 1,
@@ -169,7 +170,7 @@ export const HomeStyles = StyleSheet.create({
     marginLeft: 5,
   },
   sendButton: {
-    backgroundColor :'#885053',
+    backgroundColor: '#885053',
   },
   sendButtonText: {
     color: '#fff',
@@ -189,18 +190,18 @@ export const HomeStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   notificationContent: {
     flex: 1,
   },
-  
+
   notificationTitle: {
     fontSize: 14,
     fontWeight: '600',
     color: '#272635',
     marginBottom: 2,
   },
-  
+
   notificationBody: {
     fontSize: 12,
     color: '#555',

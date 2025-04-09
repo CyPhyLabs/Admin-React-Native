@@ -21,7 +21,7 @@ export const fetchMessages = async () => {
     }
 };
 
-export const sendMessage = async ({ title, target_audience, body, priority }) => {
+export const sendMessage = async ({ title, target_audience, body, priority, created_at }) => {
     try {
         const token = await AsyncStorage.getItem('access_token');
         const priorityValue = priority === true ? 'high' : 'false';
@@ -30,6 +30,7 @@ export const sendMessage = async ({ title, target_audience, body, priority }) =>
             target_audience,
             body,
             priority: priorityValue,
+            created_at
         }, {
             Authorization: `Bearer ${token}`
         });

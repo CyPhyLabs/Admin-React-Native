@@ -3,8 +3,9 @@ import { View, TextInput, Button, Alert, StyleSheet, Text } from 'react-native';
 import { authService } from '../services/auth.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import RegisterStyles from '../styles/RegisterStyles';
+
+
 const RegisterScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -34,13 +35,13 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-          <Text style={styles.title}>Register</Text>
-            <Text style={styles.subtitle}>Create a new account</Text>
+        <View style={RegisterStyles.container}>
+          <Text style={RegisterStyles.title}>Register</Text>
+            <Text style={RegisterStyles.subtitle}>Create a new account</Text>
     
-          <View style={styles.inputContainer}>
+          <View style={RegisterStyles.inputContainer}>
             <TextInput
-              style={styles.input}
+              style={RegisterStyles.input}
               placeholder="Username"
               placeholderTextColor="#8E8E93"
               value={username}
@@ -49,9 +50,9 @@ const RegisterScreen = ({ navigation }) => {
             />
           </View>
     
-          <View style={styles.inputContainer}>
+          <View style={RegisterStyles.inputContainer}>
             <TextInput
-              style={styles.input}
+              style={RegisterStyles.input}
               placeholder="Email"
               placeholderTextColor="#8E8E93"
               value={email}
@@ -61,9 +62,9 @@ const RegisterScreen = ({ navigation }) => {
             />
           </View>
     
-          <View style={styles.inputContainer}>
+          <View style={RegisterStyles.inputContainer}>
             <TextInput
-              style={styles.input}
+              style={RegisterStyles.input}
               placeholder="Password"
               placeholderTextColor="#8E8E93"
               value={password}
@@ -72,73 +73,18 @@ const RegisterScreen = ({ navigation }) => {
             />
           </View>
     
-          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-            <Text style={styles.registerButtonText}>Register</Text>
+          <TouchableOpacity style={RegisterStyles.registerButton} onPress={handleRegister}>
+            <Text style={RegisterStyles.registerButtonText}>Register</Text>
           </TouchableOpacity>
     
-          <View style={styles.loginLinkContainer}>
-            <Text style={styles.haveAccountText}>I have account? </Text>
+          <View style={RegisterStyles.loginLinkContainer}>
+            <Text style={RegisterStyles.haveAccountText}>I have account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.loginLinkText}>Log in</Text>
+              <Text style={RegisterStyles.loginLinkText}>Log in</Text>
             </TouchableOpacity>
           </View>
         </View>
       );
     };
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#D7E3F1',
-      paddingHorizontal: 20,
-      justifyContent: 'center',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#637D92',
-      marginBottom: 7,
-    },
-    subtitle: {
-      fontSize: 16,
-      color: '#8E8E93',
-      marginBottom: 30,
-    },
-    input: {
-      backgroundColor: '#F9F9F9',
-      borderRadius: 10,
-      paddingHorizontal: 15,
-      paddingVertical: 12,
-      fontSize: 16,
-      color: 'black',
-      marginBottom: 15,
-    },
-    registerButton: {
-      backgroundColor: '#885053',
-      paddingVertical: 15,
-      borderRadius: 10,
-      alignItems: 'center',
-      marginTop: 30,
-      marginBottom: 20,
-    },
-    registerButtonText: {
-      color: '#FFFFFF',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    loginLinkContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-    },
-    haveAccountText: {
-      color: '#8E8E93',
-      fontSize: 14,
-    },
-    loginLinkText: {
-      color: '#885053',
-      fontSize: 14,
-      fontWeight: 'bold',
-    },
-  });
-  
-  export default RegisterScreen;
+export default RegisterScreen;
