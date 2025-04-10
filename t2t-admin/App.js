@@ -5,11 +5,11 @@ import AppNavigator from './src/navigation/AppNavigator';
 
 const App = () => {
   return (
-    <AuthProvider>
-      <UserProvider>
+    <UserProvider>
+      <AuthProvider>
         <AppNavigator />
-      </UserProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </UserProvider>
   );
 };
 

@@ -173,8 +173,14 @@ const SettingsScreen = () => {
           
           <View style={styles.profileInfo}>
             <Text style={styles.profileName}>{userData.name}</Text>
-            <Text style={styles.profilePosition}>{userData.jobTitle}</Text>
-            <Text style={styles.profileDepartment}>{userData.department}</Text>
+            
+            {userData.jobTitle && userData.jobTitle.trim() !== '' && (
+              <Text style={styles.profilePosition}>{userData.jobTitle}</Text>
+            )}
+            
+            {userData.department && userData.department.trim() !== '' && (
+              <Text style={styles.profileDepartment}>{userData.department}</Text>
+            )}
           </View>
           
           <TouchableOpacity 
@@ -212,7 +218,9 @@ const SettingsScreen = () => {
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={styles.settingText}>Phone Number</Text>
-              <Text style={styles.settingSubtext}>{userData.phoneNumber}</Text>
+              {userData.phoneNumber && userData.phoneNumber.trim() !== '' && (
+                <Text style={styles.settingSubtext}>{userData.phoneNumber}</Text>
+              )}
             </View>
             <Icon name="chevron-forward" size={20} color="#637D92" />
           </TouchableOpacity>
