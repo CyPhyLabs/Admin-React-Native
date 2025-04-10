@@ -8,10 +8,10 @@ const EditProfileScreen = ({ navigation }) => {
   const { userData, updateUserData } = useUser();
   
   // Use useEffect to update local state whenever userData changes
-  const [name, setName] = useState(userData.name);
-  const [jobTitle, setJobTitle] = useState(userData.jobTitle);
-  const [department, setDepartment] = useState(userData.department);
-  const [email, setEmail] = useState(userData.email);
+  const [name, setName] = useState(userData.name || '');  // Use empty string as fallback
+  const [jobTitle, setJobTitle] = useState(userData.jobTitle || '');
+  const [department, setDepartment] = useState(userData.department || '');
+  const [email, setEmail] = useState(userData.email || '');
   const [profileImage, setProfileImage] = useState(userData.profileImage);
   const [showPictureSelector, setShowPictureSelector] = useState(false);
   

@@ -10,32 +10,36 @@ const PhoneNumberScreen = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
   
   useEffect(() => {
-    const loadPhoneNumber = async () => {
-      try {
-        const savedPhoneNumber = await AsyncStorage.getItem('phoneNumber');
-        if (savedPhoneNumber) {
-          setPhoneNumber(savedPhoneNumber);
-        }
-      } catch (error) {
-        console.log('Error loading phone number:', error);
-      }
-    };
-
-    loadPhoneNumber();
-  }, []);
+    // Set phone number from userData instead of AsyncStorage
+    setPhoneNumber(userData.phoneNumber || '');
+    
+    // No need to fetch from AsyncStorage since userData should be the source of truth
+  }, [userData.phoneNumber]); // Add dependency on userData.phoneNumber
 
   const savePhoneNumber = async () => {
-    // Simple validation - you might want to improve this
-    if (!phoneNumber || phoneNumber.length < 10) {
-      Alert.alert('Invalid Phone Number', 'Please enter a valid phone number');
+    // Only validate if there is a phone number
+    if (phoneNumber && phoneNumber.length < 10) {
+      Alert.alert('Invalid Phone Number', 'Please enter a valid phone number or remove it completely');
       return;
     }
 
-    // Update phone number through context instead of directly with AsyncStorage
-    const success = await updateUserData({ phoneNumber });
-    
-    if (success) {
-      setIsEditing(false);
+    try {
+      // Update user data context
+      const success = await updateUserData({ phoneNumber: phoneNumber || null });
+      
+      // Also clear the AsyncStorage value if phone is empty
+      if (phoneNumber === '') {
+        await AsyncStorage.removeItem('phoneNumber');
+      } else if (phoneNumber) {
+        await AsyncStorage.setItem('phoneNumber', phoneNumber);
+      }
+      
+      if (success) {
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.log('Error saving phone number:', error);
+      Alert.alert('Error', 'Failed to save phone number');
     }
   };
 
@@ -71,21 +75,37 @@ const PhoneNumberScreen = ({ navigation }) => {
           </View>
           
           {isEditing ? (
-            <TextInput
-              style={styles.phoneInput}
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              placeholder="Enter phone number"
-              keyboardType="phone-pad"
-              autoFocus
-            />
+            <View style={styles.phoneInputContainer}>
+              <TextInput
+                style={styles.phoneInput}
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                placeholder="Enter phone number"
+                keyboardType="phone-pad"
+                autoFocus
+              />
+              {phoneNumber && (
+                <TouchableOpacity 
+                  style={styles.clearButton} 
+                  onPress={() => setPhoneNumber('')}
+                >
+                  <Icon name="close-circle" size={20} color="#637D92" />
+                </TouchableOpacity>
+              )}
+            </View>
           ) : (
             <View style={styles.phoneDisplay}>
-              <Text style={styles.phoneNumber}>{formatPhoneNumber(phoneNumber)}</Text>
-              <View style={styles.verifiedBadge}>
-                <Icon name="checkmark-circle" size={16} color="#4CAF50" />
-                <Text style={styles.verifiedText}>Verified</Text>
-              </View>
+              {phoneNumber ? (
+                <>
+                  <Text style={styles.phoneNumber}>{formatPhoneNumber(phoneNumber)}</Text>
+                  <View style={styles.verifiedBadge}>
+                    <Icon name="checkmark-circle" size={16} color="#4CAF50" />
+                    <Text style={styles.verifiedText}>Verified</Text>
+                  </View>
+                </>
+              ) : (
+                <Text style={styles.noPhoneText}>No phone number added</Text>
+              )}
             </View>
           )}
         </View>
@@ -167,13 +187,23 @@ const styles = {
     color: '#29384B',
     marginLeft: 10,
   },
-  phoneInput: {
+  phoneInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#DFE4EA',
     borderRadius: 8,
+    paddingHorizontal: 12,
+  },
+  phoneInput: {
+    flex: 1,
     padding: 12,
     fontSize: 18,
     color: '#29384B',
+    borderWidth: 0,
+  },
+  clearButton: {
+    padding: 8,
   },
   phoneDisplay: {
     flexDirection: 'row',
@@ -198,6 +228,11 @@ const styles = {
     color: '#4CAF50',
     marginLeft: 4,
     fontWeight: '500',
+  },
+  noPhoneText: {
+    fontSize: 16,
+    color: '#637D92',
+    fontStyle: 'italic',
   },
   infoCard: {
     flexDirection: 'row',
