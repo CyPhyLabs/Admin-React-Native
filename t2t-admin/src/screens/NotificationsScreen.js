@@ -5,16 +5,46 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { NotificationContext } from '../context/NotificationContext'
 import HomeStyles from '../styles/HomeStyles';
 import NotificationStyles from '../styles/NotificationStyles';
+import { useEffect } from 'react';
+import { acknowledgeMessage } from '../services/sendMessage'; // or wherever you put it
 
 
 
-const NotificationsScreen = () => {
+
+const NotificationsScreen = ({route}) => {
     const { reloadNotifications } = useContext(NotificationContext);
     const { notifications, loading } = useContext(NotificationContext);
     const [selectedNotification, setSelectedNotification] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [activeNotificationTab, setActiveNotificationTab] = useState('unread');
     const [refreshing, setRefreshing] = useState(false);
+    const [acknowledging, setAcknowledging] = useState(false);
+    
+
+    useEffect(() => {
+        const openAndAcknowledge = async () => {
+            if (route?.params?.openNotification) {
+                const notif = route.params.openNotification;
+                setSelectedNotification(notif);
+                setModalVisible(true);
+                try {
+                    setAcknowledging(true);
+                    if (notif && notif.id) {
+                        console.log(`Acknowledging message with ID: ${notif.id}`);
+                        await acknowledgeMessage(notif.id);
+                    } else {
+                        console.error('No notification ID available for acknowledgment');
+                    }
+                } catch (error) {
+                    console.error('Failed to acknowledge message', error);
+                } finally {
+                    setAcknowledging(false);
+                }
+            }
+        };
+    
+        openAndAcknowledge();
+    }, [route?.params]);
 
 
     const onRefresh = async () => {
@@ -29,9 +59,24 @@ const NotificationsScreen = () => {
     };
 
 
-    const openModal = (notification) => {
+    const openModal = async (notification) => {
         setSelectedNotification(notification);
         setModalVisible(true);
+        
+        // Add acknowledgment logic
+        try {
+            setAcknowledging(true);
+            if (notification && notification.id) {
+                console.log(`Acknowledging message with ID: ${notification.id}`);
+                await acknowledgeMessage(notification.id);
+            } else {
+                console.error('No notification ID available for acknowledgment');
+            }
+        } catch (error) {
+            console.error('Failed to acknowledge message', error);
+        } finally {
+            setAcknowledging(false);
+        }
     };
 
     const closeModal = () => {
@@ -120,24 +165,28 @@ const NotificationsScreen = () => {
                     </View>
                 ) : (
                     <FlatList
-                        data={
-                            activeNotificationTab === 'priority'
-                                ? notifications.filter(item => item.priority === 'high')
-                                : notifications
-                        }
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item.id}
-                        ListEmptyComponent={
-                            <Text style={NotificationStyles.emptyText}>
-                                {activeNotificationTab === 'priority'
-                                    ? 'No priority notifications available'
-                                    : 'No notifications available'}
-                            </Text>
-                        }
-                        refreshControl={
-                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                        }
-                    />
+                    data={
+                        activeNotificationTab === 'priority'
+                            ? notifications.filter(item => item.priority === 'high')
+                            : activeNotificationTab === 'read'
+                                ? notifications.filter(item => item.acknowledged === true)
+                                : notifications.filter(item => !item.acknowledged) // unread tab shows only unread notifications
+                    }
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    ListEmptyComponent={
+                        <Text style={NotificationStyles.emptyText}>
+                            {activeNotificationTab === 'priority'
+                                ? 'No priority notifications available'
+                                : activeNotificationTab === 'read'
+                                    ? 'No read notifications'
+                                    : 'No unread notifications'}
+                        </Text>
+                    }
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                />
                 )}
                 <Modal
                     animationType="fade"

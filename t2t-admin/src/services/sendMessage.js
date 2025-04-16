@@ -41,3 +41,27 @@ export const sendMessage = async ({ title, target_audience, body, priority, crea
         throw error;
     }
 };
+
+
+export const acknowledgeMessage = async (messageId) => {
+    console.log('Acknowledging message with ID:', messageId);
+    try {
+        const token = await AsyncStorage.getItem('access_token');
+        const response = await apiCall(
+            `${ENDPOINTS.ACKNOWLEDGE}${messageId}/acknowledge/`,
+            'PATCH',
+            null,
+            {
+                message_id: messageId,
+                Authorization: `Bearer ${token}`
+            }
+        );
+        console.log('Message acknowledged:', response);
+        return response;
+    } catch (error) {
+        console.error('Error acknowledging message:', error);
+        throw error;
+    }       
+}
+
+

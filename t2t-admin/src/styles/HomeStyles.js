@@ -180,8 +180,8 @@ const HomeStyles = StyleSheet.create({
   notificationItem: {
     backgroundColor: '#FFF',
     borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
+    padding: 12,               // was 10
+    marginBottom: 12,          // was 10
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -199,7 +199,7 @@ const HomeStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#272635',
-    marginBottom: 2,
+    marginBottom: 0,           // remove or set to 0 instead of 2
   },
 
   notificationBody: {
@@ -236,6 +236,28 @@ const HomeStyles = StyleSheet.create({
     right: 10,
     padding: 5,
     zIndex: 1, // Ensure it's above other content
+  },
+  notificationTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 2,           // add this to match spacing
+  },
+  priorityIcon: {
+    position: 'absolute',
+    right: 2,
+    top: '155%',               // change from 115%
+    transform: [{ translateY: -12 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timeAgoText: {
+    fontSize: 12,
+    color: '#9BA9BF',
+    position: 'absolute',
+    top: -5,
+    right: 2,
   },
 });
 

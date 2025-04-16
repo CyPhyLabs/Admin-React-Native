@@ -50,7 +50,7 @@ const NotificationStyles = StyleSheet.create({
     priorityIconContainer: {
         position: 'absolute',
         right: 12,
-        top: '105%',
+        top: '125%',
         transform: [{ translateY: -12 }],
         justifyContent: 'center',
         alignItems: 'center',
@@ -59,7 +59,7 @@ const NotificationStyles = StyleSheet.create({
         fontSize: 12,
         color: '#9BA9BF',
         position: 'absolute',
-        top: -2, // Adjust this value as needed
+        top: -5, // Adjust this value as needed
         right: 2, // Adjust this value as needed
     },
 });
