@@ -10,41 +10,43 @@ import { acknowledgeMessage } from '../services/sendMessage'; // or wherever you
 
 
 
-
 const NotificationsScreen = ({route}) => {
-    const { reloadNotifications } = useContext(NotificationContext);
-    const { notifications, loading } = useContext(NotificationContext);
+    const { reloadNotifications, notifications, loading } = useContext(NotificationContext);
     const [selectedNotification, setSelectedNotification] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [activeNotificationTab, setActiveNotificationTab] = useState('unread');
     const [refreshing, setRefreshing] = useState(false);
     const [acknowledging, setAcknowledging] = useState(false);
     
-
-    useEffect(() => {
-        const openAndAcknowledge = async () => {
-            if (route?.params?.openNotification) {
-                const notif = route.params.openNotification;
-                setSelectedNotification(notif);
-                setModalVisible(true);
+    
+useEffect(() => {
+    const openAndAcknowledge = async () => {
+        if (route?.params?.openNotification) {
+            const notif = route.params.openNotification;
+            setSelectedNotification(notif);
+            setModalVisible(true);
+            
+            // Only acknowledge if not already acknowledged
+            if (notif && notif.id && !notif.acknowledged) {
                 try {
                     setAcknowledging(true);
-                    if (notif && notif.id) {
-                        console.log(`Acknowledging message with ID: ${notif.id}`);
-                        await acknowledgeMessage(notif.id);
-                    } else {
-                        console.error('No notification ID available for acknowledgment');
-                    }
+                    console.log(`Acknowledging message with ID: ${notif.id}`);
+                    await acknowledgeMessage(notif.id);
+                    
+                    // Refresh notifications after successful acknowledgment
+                    await reloadNotifications();
                 } catch (error) {
                     console.error('Failed to acknowledge message', error);
                 } finally {
                     setAcknowledging(false);
                 }
             }
-        };
-    
-        openAndAcknowledge();
-    }, [route?.params]);
+        }
+    };
+
+    openAndAcknowledge();
+}, [route?.params?.openNotification]); // Only depend on the notification object, not reloadNotifications
+
 
 
     const onRefresh = async () => {
@@ -63,21 +65,24 @@ const NotificationsScreen = ({route}) => {
         setSelectedNotification(notification);
         setModalVisible(true);
         
-        // Add acknowledgment logic
-        try {
-            setAcknowledging(true);
-            if (notification && notification.id) {
+        // Only acknowledge if not already acknowledged
+        if (notification && notification.id && !notification.acknowledged) {
+            try {
+                setAcknowledging(true);
                 console.log(`Acknowledging message with ID: ${notification.id}`);
                 await acknowledgeMessage(notification.id);
-            } else {
-                console.error('No notification ID available for acknowledgment');
+                
+                // Refresh notifications after successful acknowledgment
+                await reloadNotifications();
+            } catch (error) {
+                console.error('Failed to acknowledge message', error);
+            } finally {
+                setAcknowledging(false);
             }
-        } catch (error) {
-            console.error('Failed to acknowledge message', error);
-        } finally {
-            setAcknowledging(false);
         }
     };
+    
+
 
     const closeModal = () => {
         setModalVisible(false);

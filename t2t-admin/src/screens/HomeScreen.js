@@ -1,23 +1,26 @@
 import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
-import {View, Text, SafeAreaView, TouchableOpacity, Modal, TextInput, Switch, Platform} from 'react-native';
+import {View, Text, SafeAreaView, TouchableOpacity, Modal, TextInput, Switch, Platform, RefreshControl, ScrollView} from 'react-native';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import { AuthContext } from '../context/AuthContext';
+import { NotificationContext } from '../context/NotificationContext'; // Add this import
 import HomeStyles from '../styles/HomeStyles';
-import { fetchMessages, sendMessage } from '../services/sendMessage';
+import { acknowledgeMessage, fetchMessages, sendMessage } from '../services/sendMessage';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { logout } = useContext(AuthContext);
   const { getItem: getStoredUsername } = useAsyncStorage('username');
+  const { notifications, loading: isNotificationLoading, reloadNotifications } = useContext(NotificationContext); // Get notifications from context
+
+  const [refreshing, setRefreshing] = useState(false);
+
 
   // User state
   const [username, setUsername] = useState('');
   
   // Notifications state
-  const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // Modal state
@@ -41,30 +44,18 @@ const HomeScreen = () => {
     fetchUsername();
   }, [getStoredUsername]);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+  // Remove the fetchNotifications useEffect and function since we're now using the context
 
-  const fetchNotifications = useCallback(async () => {
-    setIsLoading(true);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
     try {
-      const data = await fetchMessages();
-      const formattedNotifications = data.map(item => ({
-        title: item.message.title,
-        body: item.message.body,
-        priority: item.message.priority,
-        read: false,
-        id: item.message.message_id,
-        created_at: item.created_at,
-      }));
-
-      setNotifications(formattedNotifications);
+      await reloadNotifications();
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error('Error refreshing data:', error);
     } finally {
-      setIsLoading(false);
+      setRefreshing(false);
     }
-  }, []);
+  }, [reloadNotifications]);
 
   const toggleAddModal = useCallback(() => {
     setIsAddModalVisible(prev => !prev);
@@ -99,11 +90,11 @@ const HomeScreen = () => {
       console.log('API Response:', response);
       resetForm();
       toggleAddModal();
-      fetchNotifications(); // Refresh notifications after sending
+      await reloadNotifications(); // Use the context's reloadNotifications function instead
     } catch (error) {
       console.error('Error sending message:', error);
     }
-  }, [message, title, recipient, isPriority, resetForm, toggleAddModal, fetchNotifications]);
+  }, [message, title, recipient, isPriority, resetForm, toggleAddModal, reloadNotifications]);
 
   const formatDate = useCallback((dateString) => {
     if (!dateString) return 'Date not available';
@@ -135,16 +126,16 @@ const HomeScreen = () => {
   ), [username]);
 
   const NotificationsSection = useMemo(() => (
-    <View style={HomeStyles.sectionContainer}>
+    <View style={[HomeStyles.sectionContainer, { minHeight: 200 }]}>
       <View style={HomeStyles.sectionTextContainer}>
         <Text style={HomeStyles.sectionText}>Notifications</Text>
         <Icon name="notifications-outline" size={20} color="#885053" style={HomeStyles.sectionIcon} />
       </View>
-
+  
       {notifications.length > 0 ? (
         [...notifications]
-          .filter(notification => !notification.acknowledged)
-          .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+          .filter(notification => !notification.acknowledged) // Filter unacknowledged notifications
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
           .slice(0, 3)
           .map((notification, index) => (
             <TouchableOpacity 
@@ -156,7 +147,7 @@ const HomeScreen = () => {
                   title: notification.title,
                   body: notification.body,
                   priority: notification.priority,
-                  createdAt: notification.created_at,
+                  createdAt: notification.createdAt,
                   acknowledged: notification.acknowledged
                 };
                 navigation.navigate('Notifications', { openNotification: formattedNotification });
@@ -172,14 +163,16 @@ const HomeScreen = () => {
                   )}
                 </View>
                 <Text style={HomeStyles.notificationBody}>{notification.body}</Text>
-                <Text style={HomeStyles.timeAgoText}>{formatDate(notification.created_at)}</Text>
+                <Text style={HomeStyles.timeAgoText}>{formatDate(notification.createdAt)}</Text>
               </View>
             </TouchableOpacity>
           ))
       ) : (
-        <Text style={HomeStyles.noNotificationsText}>
-          {isLoading ? "Loading notifications" : "No notifications"}
-        </Text>
+        <View style={HomeStyles.emptyNotificationsContainer}>
+          <Text style={HomeStyles.noNotificationsText}>
+            {isNotificationLoading ? "Loading notifications" : "No notifications"}
+          </Text>
+        </View>
       )}
       <TouchableOpacity
         style={HomeStyles.viewAllButton}
@@ -189,7 +182,8 @@ const HomeScreen = () => {
         <Icon name="chevron-forward" size={16} color="#29384B" />
       </TouchableOpacity>
     </View>
-  ), [notifications, isLoading, formatDate, navigation]);
+  ), [notifications, isNotificationLoading, formatDate, navigation]);
+
 
   const UpcomingEventsSection = useMemo(() => (
     <View style={HomeStyles.sectionContainer}>
@@ -327,9 +321,21 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={HomeStyles.container}>
-      {HeaderSection}
-      {NotificationsSection}
-      {UpcomingEventsSection}
+      <ScrollView
+        contentContainerStyle={HomeStyles.scrollViewContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#885053']} // Android
+            tintColor="#885053" // iOS
+          />
+        }
+      >
+        {HeaderSection}
+        {NotificationsSection}
+        {UpcomingEventsSection}
+      </ScrollView>
 
       <TouchableOpacity
         style={HomeStyles.addButton}
@@ -343,4 +349,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default HomeScreen; 

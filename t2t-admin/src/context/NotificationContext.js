@@ -37,9 +37,9 @@ export const NotificationProvider = ({ children }) => {
         }
     };
 
-    // Expose reloadNotifications for pull-to-refresh
+    // Expose reloadNotifications for pull-to-refresh - make it return a promise
     const reloadNotifications = async () => {
-        await loadNotifications();
+        return await loadNotifications();
     };
 
     // Add isAuthenticated to the dependency array to reload when auth state changes

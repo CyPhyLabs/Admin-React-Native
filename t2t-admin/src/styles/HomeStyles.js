@@ -259,6 +259,20 @@ const HomeStyles = StyleSheet.create({
     top: -5,
     right: 2,
   },
+  emptyNotificationsContainer: {
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyViewAllButton: {
+    backgroundColor: '#F8E5E5', // Light pink background
+    borderWidth: 1,
+    borderColor: '#885053',
+  },
+  emptyViewAllText: {
+    color: '#885053', // Change text color to match your theme
+    fontWeight: 'bold',
+  },
 });
 
 export default HomeStyles;
