@@ -4,17 +4,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  // Initialize with empty values instead of dummy data
   const [userData, setUserData] = useState({
-    name: 'John Doe',
-    jobTitle: 'Software Engineer',
-    department: 'IT Department',
-    email: 'john.doe@example.com',
-    profileImage: 'https://randomuser.me/api/portraits/men/32.jpg',
-    phoneNumber: '+1 (555) 123-4567',
-    dob: '01/15/1985',
-    address: '123 Main St, Anytown, USA',
-    emergency: 'Jane Doe (555) 123-4567',
-    allergies: 'None'
+    name: '',
+    jobTitle: '',
+    department: '',
+    email: '',
+    profileImage: '', 
+    phoneNumber: '',
+    dob: '',
+    address: '',
+    emergency: '',
+    allergies: ''
   });
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export const UserProvider = ({ children }) => {
       const profileData = await AsyncStorage.getItem('profileData');
       const personalInfo = await AsyncStorage.getItem('personalInfo');
       const phoneNumber = await AsyncStorage.getItem('phoneNumber');
+      const username = await AsyncStorage.getItem('username');
       
       let updatedData = {...userData};
       
@@ -41,6 +43,11 @@ export const UserProvider = ({ children }) => {
       
       if (phoneNumber) {
         updatedData.phoneNumber = phoneNumber;
+      }
+
+      // Set the name from username if available and name is not set
+      if (username && !updatedData.name) {
+        updatedData.name = username;
       }
       
       setUserData(updatedData);
@@ -64,6 +71,11 @@ export const UserProvider = ({ children }) => {
           email: updatedData.email,
           profileImage: updatedData.profileImage,
         }));
+
+        // Also update username if name is updated
+        if (newData.name) {
+          await AsyncStorage.setItem('username', updatedData.name);
+        }
       }
       
       if (newData.name || newData.dob || newData.address || 
@@ -88,8 +100,76 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const login = async (username, password) => {
+    try {
+      const profileData = await AsyncStorage.getItem('profileData');
+      if (!profileData) {
+        await AsyncStorage.setItem('profileData', JSON.stringify({
+          name: username, 
+          jobTitle: '',
+          department: '',
+          email: '',
+          profileImage: '',
+        }));
+        
+        await AsyncStorage.setItem('personalInfo', JSON.stringify({
+          name: username,
+          dob: '',
+          address: '',
+          emergency: '',
+          allergies: '',
+        }));
+        
+        await AsyncStorage.setItem('username', username);
+      }
+      
+      await AsyncStorage.setItem('userToken', userToken);
+      dispatch({ type: 'LOGIN', token: userToken });
+    } catch (error) {
+      console.log('Login error:', error);
+    }
+  };
+
+  const clearUserData = async () => {
+    try {
+      const keysToRemove = [
+        'profileData', 
+        'personalInfo', 
+        'phoneNumber', 
+        'username',
+        // Any other user data keys
+      ];
+      
+      await AsyncStorage.multiRemove(keysToRemove);
+      
+      // Reset the userData state
+      setUserData({
+        name: '',
+        jobTitle: '',
+        department: '',
+        email: '',
+        profileImage: '', 
+        phoneNumber: '',
+        dob: '',
+        address: '',
+        emergency: '',
+        allergies: ''
+      });
+      
+      return true;
+    } catch (error) {
+      console.log('Error clearing user data:', error);
+      return false;
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ userData, updateUserData, loadUserData }}>
+    <UserContext.Provider value={{ 
+      userData, 
+      updateUserData, 
+      loadUserData, 
+      clearUserData  // Add this
+    }}>
       {children}
     </UserContext.Provider>
   );

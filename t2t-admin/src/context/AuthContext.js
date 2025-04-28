@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Buffer } from 'buffer';
-import { refreshAccessToken } from '../services/refreshTokenAPI'; // Import the refresh function
+import { refreshAccessToken } from '../services/refreshTokenAPI';
 
 export const AuthContext = createContext();
 
@@ -11,20 +11,34 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         console.log('AuthProvider mounted, checking authentication status...');
         checkAuth();
-
-        // Set up periodic token checking (every minute)
         
         const tokenCheckInterval = setInterval(() => {
-            
             checkAuth();
         }, 60000);
 
         return () => {
-            
             clearInterval(tokenCheckInterval);
         };
     }, []);
 
+    // Move the clearUserData function inside AuthContext
+    const clearUserData = async () => {
+        try {
+            const keysToRemove = [
+                'profileData', 
+                'personalInfo', 
+                'phoneNumber', 
+                'username',
+                // Add any other user-specific keys here
+            ];
+            
+            await AsyncStorage.multiRemove(keysToRemove);
+            return true;
+        } catch (error) {
+            console.error('Error clearing user data:', error);
+            return false;
+        }
+    };
 
     const isTokenExpired = (token) => {
         console.log('Checking if token is expired...');
@@ -100,16 +114,15 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         console.log('Logging out user...');
         try {
-            await AsyncStorage.removeItem('access_token');
-            await AsyncStorage.removeItem('refresh_token');
+            await clearUserData();
+            
+            await AsyncStorage.removeItem('userToken');
             setIsAuthenticated(false);
         } catch (error) {
             console.error('Error during logout:', error);
             setIsAuthenticated(false); // Force logout even on error
         }
     };
- 
-
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, login, logout, checkAuth }}>

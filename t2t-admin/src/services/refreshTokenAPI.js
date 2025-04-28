@@ -8,9 +8,9 @@ export const refreshAccessToken = async () => {
         if (!refresh) {
             throw new Error('Refresh token missing');
         }
-
-        const response = await fetch(`${BASE_URL}/api/token/refresh/`, {
-            method: 'POST', // Changed from GET to POST
+      
+        const response = await fetch(`${BASE_URL}/token/refresh/`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -25,7 +25,8 @@ export const refreshAccessToken = async () => {
         }
 
         const data = JSON.parse(text);
-        
+
+
         await AsyncStorage.setItem('access_token', data.access);
         return data.access;
     } catch (error) {

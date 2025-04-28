@@ -15,19 +15,48 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const PersonalInfoScreen = ({ navigation }) => {
   const { userData, updateUserData } = useUser();
-  const [name, setName] = useState(userData.name);
-  const [dob, setDob] = useState(userData.dob || '01/15/1985');
-  const [address, setAddress] = useState(userData.address || '123 Main St, Anytown, USA');
-  const [emergency, setEmergency] = useState(userData.emergency || 'Jane Doe (555) 123-4567');
-  const [allergies, setAllergies] = useState(userData.allergies || 'None');
+  const [name, setName] = useState(userData.name || '');
+  const [dob, setDob] = useState(userData.dob || '');
+  const [address, setAddress] = useState(userData.address || '');
+  const [emergency, setEmergency] = useState(userData.emergency || '');
+  const [allergies, setAllergies] = useState(userData.allergies || '');
   
   // Date picker states
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [dateValue, setDateValue] = useState(new Date(1985, 0, 15));
+  const [dateValue, setDateValue] = useState(() => {
+    // If user already has a DOB, use that
+    // if (userData.dob) {
+    //   return parseDate(userData.dob);
+    // }
+    
+    // Otherwise set a reasonable default date that allows selecting any month
+    // Use Jan 1st of 20 years ago
+    const defaultDate = new Date();
+    defaultDate.setFullYear(defaultDate.getFullYear() - 20);
+    defaultDate.setMonth(0); // January
+    defaultDate.setDate(1);
+    return defaultDate;
+  });
+
+  // Parse date string to Date object
+  function parseDate(dateString) {
+    if (!dateString) return new Date();
+    
+    const parts = dateString.split('/');
+    if (parts.length === 3) {
+      // MM/DD/YYYY format
+      return new Date(parseInt(parts[2]), parseInt(parts[0])-1, parseInt(parts[1]));
+    }
+    return new Date();
+  }
 
   // Handle date change
   const onDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios');
+    // Always hide the date picker on Android after selection
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    
     if (selectedDate) {
       setDateValue(selectedDate);
       
@@ -40,8 +69,9 @@ const PersonalInfoScreen = ({ navigation }) => {
     }
   };
 
-  const showDatepicker = () => {
-    setShowDatePicker(true);
+  // Toggle the date picker visibility
+  const toggleDatePicker = () => {
+    setShowDatePicker(!showDatePicker);
   };
 
   const savePersonalInfo = async () => {
@@ -111,21 +141,56 @@ const PersonalInfoScreen = ({ navigation }) => {
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Date of Birth</Text>
             <TouchableOpacity 
-              onPress={showDatepicker}
+              onPress={toggleDatePicker}
               style={styles.inputContainer}
             >
               {renderFieldIcon("calendar-outline")}
-              <Text style={styles.dateText}>{dob}</Text>
+              <Text style={styles.dateText}>
+                {dob || "Select date of birth"}
+              </Text>
             </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={dateValue}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={onDateChange}
-                maximumDate={new Date()}
-              />
+            
+            {Platform.OS === 'ios' && showDatePicker ? (
+              <Modal
+                transparent={true}
+                animationType="slide"
+                visible={showDatePicker}
+              >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <View style={styles.pickerHeader}>
+                      <TouchableOpacity
+                        style={styles.doneButton}
+                        onPress={() => setShowDatePicker(false)}
+                      >
+                        <Text style={styles.doneButtonText}>Done</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <DateTimePicker
+                      testID="dateTimePicker"
+                      value={dateValue}
+                      mode="date"
+                      display="spinner"
+                      onChange={onDateChange}
+                      maximumDate={new Date()}
+                      minimumDate={new Date(1900, 0, 1)} // Allow dates back to 1900
+                      style={{width: '100%'}}
+                    />
+                  </View>
+                </View>
+              </Modal>
+            ) : (
+              Platform.OS === 'android' && showDatePicker && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={dateValue}
+                  mode="date"
+                  display="default"
+                  onChange={onDateChange}
+                  maximumDate={new Date()}
+                  minimumDate={new Date(1900, 0, 1)} // Allow dates back to 1900
+                />
+              )
             )}
           </View>
 
@@ -324,6 +389,38 @@ const styles = {
   textAreaIcon: {
     marginTop: 12,
     alignSelf: 'flex-start',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 10,
+  },
+  doneButton: {
+    padding: 10,
+  },
+  doneButtonText: {
+    color: '#885053',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 };
 
