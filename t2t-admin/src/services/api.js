@@ -67,5 +67,6 @@ export const ENDPOINTS = {
     REGISTER: '/register/',
     MESSAGES: '/notifications/',
     SEND_MESSAGE: '/messages/create/',
+    ACKNOWLEDGE: '/notifications/',
 };
 

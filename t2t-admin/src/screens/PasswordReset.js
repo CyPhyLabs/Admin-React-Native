@@ -7,27 +7,15 @@ import LoginStyles from '../styles/LoginStyles';
 
 
 
-const LoginScreen = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const { login } = useContext(AuthContext);
+const PasswordReset = ({ navigation }) => {
 
     const handleLogin = async () => {
-        try {
-            const data = await authService.login(email, password);
-            
-            await AsyncStorage.setItem('access_token', data.access);
-            await AsyncStorage.setItem('refresh_token', data.refresh);
-            
-            login();
-        } catch (error) {
-            Alert.alert('Error', error.message);
-        }
+       
     };
     return (
       <View style={LoginStyles.container}>
-        <Text style={LoginStyles.title}>Sign in to your Account</Text>
-        <Text style={LoginStyles.subtitle}>Welcome back! Please enter your details.</Text>
+        <Text style={LoginStyles.title}>Password Reset</Text>
+        <Text style={LoginStyles.subtitle}>Reset Your Password</Text>
   
         <TextInput
           placeholder="Email"

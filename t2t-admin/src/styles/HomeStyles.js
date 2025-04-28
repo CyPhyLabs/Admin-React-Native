@@ -1,7 +1,8 @@
 // src/screens/HomeScreenStyles.js
 import { StyleSheet } from 'react-native';
 
-export const HomeStyles = StyleSheet.create({
+const HomeStyles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#D7E3F1',
@@ -54,7 +55,7 @@ export const HomeStyles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 5,
     width: '100%',
-    marginBottom: 15, 
+    marginBottom: 15,
   },
   tab: {
     flex: 1,
@@ -169,7 +170,7 @@ export const HomeStyles = StyleSheet.create({
     marginLeft: 5,
   },
   sendButton: {
-    backgroundColor :'#885053',
+    backgroundColor: '#885053',
   },
   sendButtonText: {
     color: '#fff',
@@ -179,8 +180,8 @@ export const HomeStyles = StyleSheet.create({
   notificationItem: {
     backgroundColor: '#FFF',
     borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
+    padding: 12,               // was 10
+    marginBottom: 12,          // was 10
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -189,18 +190,18 @@ export const HomeStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   notificationContent: {
     flex: 1,
   },
-  
+
   notificationTitle: {
     fontSize: 14,
     fontWeight: '600',
     color: '#272635',
-    marginBottom: 2,
+    marginBottom: 0,           // remove or set to 0 instead of 2
   },
-  
+
   notificationBody: {
     fontSize: 12,
     color: '#555',
@@ -235,6 +236,42 @@ export const HomeStyles = StyleSheet.create({
     right: 10,
     padding: 5,
     zIndex: 1, // Ensure it's above other content
+  },
+  notificationTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 2,           // add this to match spacing
+  },
+  priorityIcon: {
+    position: 'absolute',
+    right: 2,
+    top: '155%',               // change from 115%
+    transform: [{ translateY: -12 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timeAgoText: {
+    fontSize: 12,
+    color: '#9BA9BF',
+    position: 'absolute',
+    top: -5,
+    right: 2,
+  },
+  emptyNotificationsContainer: {
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyViewAllButton: {
+    backgroundColor: '#F8E5E5', // Light pink background
+    borderWidth: 1,
+    borderColor: '#885053',
+  },
+  emptyViewAllText: {
+    color: '#885053', // Change text color to match your theme
+    fontWeight: 'bold',
   },
 });
 
